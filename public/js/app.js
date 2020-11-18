@@ -29057,15 +29057,87 @@ if (document.getElementById('sky-angel')) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
 function Main() {
+  //initiate state
+  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new Image()),
+      plane = _useState.plane,
+      setPlane = _useState.setPlane;
+
+  var _useState2 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new Image()),
+      star = _useState2.star,
+      setStar = _useState2.setStar;
+
+  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new Image()),
+      bird = _useState3.bird,
+      setBird = _useState3.setBird;
+
+  var _useState4 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new Image()),
+      parachute = _useState4.parachute,
+      setParachute = _useState4.setParachute;
+
+  var _useState5 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new Image()),
+      cloud = _useState5.cloud,
+      setCloud = _useState5.setCloud; //draw the game animation
+
+
+  var draw = function draw() {
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d'); //context
+    //give background color
+
+    context.fillStyle = '#74b9ff';
+    context.fillRect(0, 0, canvas.width, canvas.height); //load images
+    // plane.src = 'images/plane.png';
+    // star.src = 'images/star.png';
+    // bird.src = 'images/bird.png';
+    // parachute.src = 'images/parachute.png';
+    // cloud.src = 'images/cloud.png';
+
+    setPlane(function (prevState) {
+      return _objectSpread(_objectSpread({}, prevState), {}, {
+        src: 'images/plane.png'
+      });
+    });
+    setStar(function (prevState) {
+      return _objectSpread(_objectSpread({}, prevState), {}, {
+        src: 'images/star.png'
+      });
+    });
+    setBird(function (prevState) {
+      return _objectSpread(_objectSpread({}, prevState), {}, {
+        src: 'images/bird.png'
+      });
+    });
+    setParachute(function (prevState) {
+      return _objectSpread(_objectSpread({}, prevState), {}, {
+        src: 'images/parachute.png'
+      });
+    });
+    setCloud(function (prevState) {
+      return _objectSpread(_objectSpread({}, prevState), {}, {
+        src: 'images/cloud.png'
+      });
+    });
+  };
+
+  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
+    return draw();
+  }, []);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "container"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("canvas", {
-    width: "200px",
-    height: "700px"
+    width: "400px",
+    height: "400px",
+    id: "canvas"
   }));
 }
 
