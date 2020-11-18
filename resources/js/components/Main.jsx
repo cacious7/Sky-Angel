@@ -19,7 +19,7 @@ function Main() {
         //context.fillRect(0, 0, canvas.width, canvas.height);
 
         //load images
-        plane.onload = drawImage( context);
+        plane.onload = drawImage( context );
         plane.src = 'images/plane.png';
         star.src = 'images/star.png';
         bird.src = 'images/bird.png';
@@ -30,9 +30,6 @@ function Main() {
         // setBird( prevState => { return {...prevState, src: 'images/bird.png' }  } );
         // setParachute( prevState => { return {...prevState, src: 'images/parachute.png' }  } );
         // setCloud( prevState => { return {...prevState, src: 'images/cloud.png' }  } );
-        
-        
-
     }
 
     let drawImage = ( context ) => {
