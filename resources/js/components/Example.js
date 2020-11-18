@@ -3,19 +3,9 @@ import ReactDOM from 'react-dom';
 import {useEffect} from 'react';
 
 function Example() {
-
-    useEffect( ()=> alert('here') );
-    
     return (
         <div className="container">
-            <div className="row justify-content-center">
-                <div className="col-md-8">
-                    <div className="card">
-                        <div className="card-header">Example Component</div>
-                        <div className="card-body">I'm an example component!</div>
-                    </div>
-                </div>
-            </div>
+            <canvas width='200px' height='700px' ></canvas>
         </div>
     );
 }
