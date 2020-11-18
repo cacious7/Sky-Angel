@@ -29057,11 +29057,17 @@ if (document.getElementById('sky-angel')) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
@@ -29069,64 +29075,53 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 function Main() {
   //initiate state
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new Image()),
-      plane = _useState.plane,
-      setPlane = _useState.setPlane;
-
-  var _useState2 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new Image()),
-      star = _useState2.star,
-      setStar = _useState2.setStar;
+      _useState2 = _slicedToArray(_useState, 2),
+      plane = _useState2[0],
+      setPlane = _useState2[1];
 
   var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new Image()),
-      bird = _useState3.bird,
-      setBird = _useState3.setBird;
-
-  var _useState4 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new Image()),
-      parachute = _useState4.parachute,
-      setParachute = _useState4.setParachute;
+      _useState4 = _slicedToArray(_useState3, 2),
+      star = _useState4[0],
+      setStar = _useState4[1];
 
   var _useState5 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new Image()),
-      cloud = _useState5.cloud,
-      setCloud = _useState5.setCloud; //draw the game animation
+      _useState6 = _slicedToArray(_useState5, 2),
+      bird = _useState6[0],
+      setBird = _useState6[1];
+
+  var _useState7 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new Image()),
+      _useState8 = _slicedToArray(_useState7, 2),
+      parachute = _useState8[0],
+      setParachute = _useState8[1];
+
+  var _useState9 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new Image()),
+      _useState10 = _slicedToArray(_useState9, 2),
+      cloud = _useState10[0],
+      setCloud = _useState10[1]; //draw the game animation
 
 
   var draw = function draw() {
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d'); //context
-    //give background color
+    //set background color
+    //context.fillStyle = '#74b9ff';
+    //context.fillRect(0, 0, canvas.width, canvas.height);
+    //load images
 
-    context.fillStyle = '#74b9ff';
-    context.fillRect(0, 0, canvas.width, canvas.height); //load images
-    // plane.src = 'images/plane.png';
-    // star.src = 'images/star.png';
-    // bird.src = 'images/bird.png';
-    // parachute.src = 'images/parachute.png';
-    // cloud.src = 'images/cloud.png';
+    plane.onload = drawImage(context);
+    plane.src = 'images/plane.png';
+    star.src = 'images/star.png';
+    bird.src = 'images/bird.png';
+    parachute.src = 'images/parachute.png'; //cloud.src = 'images/cloud.png';
+    // setPlane( prevState => { return {...prevState, src: 'images/plane.png' }  } );
+    // setStar( prevState => { return {...prevState, src: 'images/star.png' }  } );
+    // setBird( prevState => { return {...prevState, src: 'images/bird.png' }  } );
+    // setParachute( prevState => { return {...prevState, src: 'images/parachute.png' }  } );
+    // setCloud( prevState => { return {...prevState, src: 'images/cloud.png' }  } );
+  };
 
-    setPlane(function (prevState) {
-      return _objectSpread(_objectSpread({}, prevState), {}, {
-        src: 'images/plane.png'
-      });
-    });
-    setStar(function (prevState) {
-      return _objectSpread(_objectSpread({}, prevState), {}, {
-        src: 'images/star.png'
-      });
-    });
-    setBird(function (prevState) {
-      return _objectSpread(_objectSpread({}, prevState), {}, {
-        src: 'images/bird.png'
-      });
-    });
-    setParachute(function (prevState) {
-      return _objectSpread(_objectSpread({}, prevState), {}, {
-        src: 'images/parachute.png'
-      });
-    });
-    setCloud(function (prevState) {
-      return _objectSpread(_objectSpread({}, prevState), {}, {
-        src: 'images/cloud.png'
-      });
-    });
+  var drawImage = function drawImage(context) {
+    context.drawImage(plane, 0, 0, 50, 50);
   };
 
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
@@ -29163,8 +29158,8 @@ function Main() {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! F:\xampp\htdocs\Sky-Angel\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! F:\xampp\htdocs\Sky-Angel\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\cacious\Documents\Cacious\Sky-Angel\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\cacious\Documents\Cacious\Sky-Angel\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
