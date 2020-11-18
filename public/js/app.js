@@ -29040,9 +29040,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-if (document.getElementById('sky-angel')) {
-  react_dom__WEBPACK_IMPORTED_MODULE_0___default.a.render( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_Main__WEBPACK_IMPORTED_MODULE_2__["default"], null), document.getElementById('sky-angel'));
-}
+window.onload = function () {
+  if (document.getElementById('sky-angel')) {
+    react_dom__WEBPACK_IMPORTED_MODULE_0___default.a.render( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_Main__WEBPACK_IMPORTED_MODULE_2__["default"], null), document.getElementById('sky-angel'));
+  }
+};
 
 /***/ }),
 
@@ -29104,24 +29106,18 @@ function Main() {
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d'); //context
     //set background color
-    //context.fillStyle = '#74b9ff';
-    //context.fillRect(0, 0, canvas.width, canvas.height);
-    //load images
 
-    plane.onload = drawImage(context);
+    context.fillStyle = '#74b9ff';
+    context.fillRect(0, 0, canvas.width, canvas.height); //load images
+
+    plane.onload = function () {
+      return context.drawImage(plane, 0, 0, 50, 50);
+    };
+
     plane.src = 'images/plane.png';
     star.src = 'images/star.png';
     bird.src = 'images/bird.png';
-    parachute.src = 'images/parachute.png'; //cloud.src = 'images/cloud.png';
-    // setPlane( prevState => { return {...prevState, src: 'images/plane.png' }  } );
-    // setStar( prevState => { return {...prevState, src: 'images/star.png' }  } );
-    // setBird( prevState => { return {...prevState, src: 'images/bird.png' }  } );
-    // setParachute( prevState => { return {...prevState, src: 'images/parachute.png' }  } );
-    // setCloud( prevState => { return {...prevState, src: 'images/cloud.png' }  } );
-  };
-
-  var drawImage = function drawImage(context) {
-    context.drawImage(plane, 0, 0, 50, 50);
+    parachute.src = 'images/parachute.png';
   };
 
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
@@ -29158,8 +29154,8 @@ function Main() {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\cacious\Documents\Cacious\Sky-Angel\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\cacious\Documents\Cacious\Sky-Angel\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! F:\xampp\htdocs\Sky-Angel\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! F:\xampp\htdocs\Sky-Angel\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
