@@ -29066,11 +29066,6 @@ function Example() {
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
     return alert('here');
   });
-
-  var alert = function alert() {
-    alert('here');
-  };
-
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "container"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {

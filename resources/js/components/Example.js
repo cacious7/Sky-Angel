@@ -5,11 +5,7 @@ import {useEffect} from 'react';
 function Example() {
 
     useEffect( ()=> alert('here') );
-
-    let alert = ()=> {
-        alert('here');
-    }
-
+    
     return (
         <div className="container">
             <div className="row justify-content-center">
