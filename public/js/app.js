@@ -29111,7 +29111,7 @@ function Main() {
     context.fillRect(0, 0, canvas.width, canvas.height); //load images
 
     plane.onload = function () {
-      return context.drawImage(plane, 0, 0, 50, 50);
+      return context.drawImage(plane, (canvas.width + plane.width) / 2, canvas.height, 50, 50);
     };
 
     plane.src = 'images/plane.png';
