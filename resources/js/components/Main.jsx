@@ -19,7 +19,9 @@ function Main() {
         context.fillRect(0, 0, canvas.width, canvas.height);
 
         //load images
-        plane.onload = () => context.drawImage(plane, (canvas.width + plane.width)/2, canvas.height, 50, 50);
+        plane.x = (canvas.width-50)/2;
+        plane.y = canvas.height;
+        plane.onload = () => context.drawImage(plane, planeX, 0, 50, 50);
         plane.src = 'images/plane.png';
         star.src = 'images/star.png';
         bird.src = 'images/bird.png';

@@ -29110,8 +29110,11 @@ function Main() {
     context.fillStyle = '#74b9ff';
     context.fillRect(0, 0, canvas.width, canvas.height); //load images
 
+    plane.x = (canvas.width - 50) / 2;
+    plane.y = canvas.height;
+
     plane.onload = function () {
-      return context.drawImage(plane, (canvas.width + plane.width) / 2, canvas.height, 50, 50);
+      return context.drawImage(plane, planeX, 0, 50, 50);
     };
 
     plane.src = 'images/plane.png';
