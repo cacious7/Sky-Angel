@@ -29172,7 +29172,8 @@ function Main() {
 
   var draw = function draw() {
     //intiate image drops
-    dropImage(imgMeta.cloud, context, canvas);
+    //dropImage( imgMeta.cloud, context, canvas );
+    imgMeta.cloud.y += 10;
     requestAnimationFrame(draw);
   };
   /** Drop images from top of canvas to bottom
@@ -29188,7 +29189,7 @@ function Main() {
 
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
     return init();
-  }, []);
+  });
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "container"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("canvas", {

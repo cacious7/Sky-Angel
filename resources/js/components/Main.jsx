@@ -71,8 +71,8 @@ function Main() {
     //draw the game animation
     let draw = () => {
         //intiate image drops
-        dropImage( imgMeta.cloud, context, canvas );
-
+        //dropImage( imgMeta.cloud, context, canvas );
+        imgMeta.cloud.y += 10;
         requestAnimationFrame(draw);
     }
 
@@ -85,7 +85,7 @@ function Main() {
         imgMeta.y--;
     }
 
-    useEffect( () => init(), [] );
+    useEffect( () => init() );
 
     return (
         <div className="container">
