@@ -29099,32 +29099,95 @@ function Main() {
   var _useState9 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new Image()),
       _useState10 = _slicedToArray(_useState9, 2),
       cloud = _useState10[0],
-      setCloud = _useState10[1]; //draw the game animation
+      setCloud = _useState10[1];
 
+  var context = {};
+  var canvas = {};
+  var imgMeta = {}; //initiate context and images upon component initial render
 
-  var draw = function draw() {
-    var canvas = document.getElementById('canvas');
-    var context = canvas.getContext('2d'); //context
+  var init = function init() {
+    canvas = document.getElementById('canvas');
+    context = canvas.getContext('2d'); //context
     //set background color
 
     context.fillStyle = '#74b9ff';
-    context.fillRect(0, 0, canvas.width, canvas.height); //load images
+    context.fillRect(0, 0, canvas.width, canvas.height); //set initial coordinates for images
 
-    plane.x = (canvas.width - 50) / 2;
-    plane.y = canvas.height;
+    imgMeta = {
+      plane: {
+        x: (canvas.width - 50) / 2,
+        y: canvas.height - 50,
+        delay: 0
+      },
+      star: {
+        x: 0,
+        y: 0,
+        delay: 1.5
+      },
+      bird: {
+        x: 0,
+        y: 0,
+        delay: .5
+      },
+      parachute: {
+        x: 0,
+        y: 0,
+        delay: 1.5
+      },
+      cloud: {
+        x: 0,
+        y: 0,
+        delay: 0
+      }
+    }; //load images
 
     plane.onload = function () {
-      return context.drawImage(plane, planeX, 0, 50, 50);
+      return context.drawImage(plane, imgMeta.plane.x, imgMeta.plane.y, 50, 50);
+    };
+
+    star.onload = function () {
+      return context.drawImage(star, imgMeta.star.x, imgMeta.star.y, 50, 50);
+    };
+
+    bird.onload = function () {
+      return context.drawImage(bird, imgMeta.bird.x, imgMeta.bird.y, 50, 50);
+    };
+
+    parachute.onload = function () {
+      return context.drawImage(parachute, imgMeta.parachute.x, imgMeta.parachute.y, 50, 50);
+    };
+
+    cloud.onload = function () {
+      return context.drawImage(cloud, imgMeta.cloud.x, imgMeta.cloud.y, 50, 50);
     };
 
     plane.src = 'images/plane.png';
     star.src = 'images/star.png';
     bird.src = 'images/bird.png';
     parachute.src = 'images/parachute.png';
+    cloud.src = 'images/cloud.png';
+    draw();
+  }; //draw the game animation
+
+
+  var draw = function draw() {
+    //intiate image drops
+    dropImage(imgMeta.cloud, context, canvas);
+    requestAnimationFrame(draw);
+  };
+  /** Drop images from top of canvas to bottom
+   * @param { Object } imgMeta the image's meta data to be droped
+   * @param { Object } ctx the canvas context
+   * @param { Object } cvs the canvas 
+   */
+
+
+  var dropImage = function dropImage(imgMeta, ctx, cvs) {
+    imgMeta.y--;
   };
 
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
-    return draw();
+    return init();
   }, []);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "container"
@@ -29157,8 +29220,8 @@ function Main() {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! F:\xampp\htdocs\Sky-Angel\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! F:\xampp\htdocs\Sky-Angel\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\cacious\Documents\Cacious\Sky-Angel\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\cacious\Documents\Cacious\Sky-Angel\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
