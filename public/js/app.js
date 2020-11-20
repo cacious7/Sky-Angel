@@ -29059,12 +29059,6 @@ window.onload = function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -29107,36 +29101,22 @@ function Main() {
       cloud = _useState10[0],
       setCloud = _useState10[1];
 
-  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])({}),
-      _useState12 = _slicedToArray(_useState11, 2),
-      context = _useState12[0],
-      setContext = _useState12[1];
-
-  var _useState13 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])({}),
-      _useState14 = _slicedToArray(_useState13, 2),
-      canvas = _useState14[0],
-      setCanvas = _useState14[1];
-
-  var _useState15 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])({}),
-      _useState16 = _slicedToArray(_useState15, 2),
-      imgMeta = _useState16[0],
-      setImgMeta = _useState16[1]; //initiate context and images upon component initial render
-
+  var context = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
+  var canvas = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
+  var imgMeta = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({}); //initiate context.current and images upon component initial render
 
   var init = function init() {
-    setCanvas(function (prevState) {
-      return document.getElementById('canvas');
-    });
-    setContext(canvas.getContext('2d')); //context
+    canvas.current = document.getElementById('canvas');
+    context.current = canvas.current.getContext('2d'); //context.current
     //set background color
 
-    context.fillStyle = '#74b9ff';
-    context.fillRect(0, 0, canvas.width, canvas.height); //set initial coordinates for images
+    context.current.fillStyle = '#74b9ff';
+    context.current.fillRect(0, 0, canvas.current.width, canvas.current.height); //set initial coordinates for images
 
-    setImgMeta({
+    imgMeta.current = {
       plane: {
-        x: (canvas.width - 50) / 2,
-        y: canvas.height - 50,
+        x: (canvas.current.width - 50) / 2,
+        y: canvas.current.height - 50,
         delay: 0
       },
       star: {
@@ -29160,7 +29140,7 @@ function Main() {
         delay: 0
       },
       loadedImages: 0
-    }); //count how many images have loaded
+    }; //count how many images have loaded
 
     plane.onload = countLoadedImages;
     star.onload = countLoadedImages;
@@ -29179,54 +29159,40 @@ function Main() {
 
 
   var countLoadedImages = function countLoadedImages() {
-    if (imgMeta.loadedImages === 4) {
-      setImgMeta(function (prevState) {
-        return _objectSpread(_objectSpread({}, prevState), {}, {
-          loadedImages: prevState.loadedImages + 1
-        });
-      });
+    if (imgMeta.current.loadedImages === 4) {
+      imgMeta.current.loadedImages += 1;
       draw(); //requestAnimationFrame(draw);
     } else {
-      setImgMeta(function (prevState) {
-        return _objectSpread(_objectSpread({}, prevState), {}, {
-          loadedImages: prevState.loadedImages + 1
-        });
-      });
+      imgMeta.current.loadedImages += 1;
     }
   }; //draw the game animation
 
 
   var draw = function draw() {
-    if (imgMeta.loadedImages === 5) {
-      context.drawImage(plane, imgMeta.plane.x, imgMeta.plane.y, 50, 50); // context.drawImage(star, imgMeta.star.x, imgMeta.star.y, 50, 50);
-      // context.drawImage(bird, imgMeta.bird.x, imgMeta.bird.y, 50, 50);
-      // context.drawImage(parachute, imgMeta.parachute.x, imgMeta.parachute.y, 50, 50);
+    if (imgMeta.current.loadedImages === 5) {
+      context.current.drawImage(plane, imgMeta.current.plane.x, imgMeta.current.plane.y, 50, 50); // context.current.drawImage(star, imgMeta.current.star.x, imgMeta.current.star.y, 50, 50);
+      // context.current.drawImage(bird, imgMeta.current.bird.x, imgMeta.current.bird.y, 50, 50);
+      // context.current.drawImage(parachute, imgMeta.current.parachute.x, imgMeta.current.parachute.y, 50, 50);
 
-      context.drawImage(cloud, imgMeta.cloud.x, imgMeta.cloud.y, 50, 50);
+      context.current.drawImage(cloud, imgMeta.current.cloud.x, imgMeta.current.cloud.y, 50, 50);
     } else {
       alert('!failed to load images');
     } //intiate image drops
-    //dropImage( imgMeta.cloud, context, canvas );
+    //dropImage( imgMeta.current.cloud, context.current, canvas );
 
 
-    setImgMeta(function (prevState) {
-      return _objectSpread(_objectSpread({}, prevState), {}, {
-        cloud: _objectSpread(_objectSpread({}, prevState.cloud), {}, {
-          y: prevState.cloud.y + 10
-        })
-      });
-    });
+    imgMeta.current.cloud.y += 10;
     requestAnimationFrame(draw);
   };
   /** Drop images from top of canvas to bottom
    * @param { Object } imgMeta the image's meta data to be droped
-   * @param { Object } ctx the canvas context
+   * @param { Object } ctx the canvas context.current
    * @param { Object } cvs the canvas 
    */
 
 
   var dropImage = function dropImage(imgMeta, ctx, cvs) {
-    imgMeta.y--;
+    imgMeta.current.y--;
   };
 
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {

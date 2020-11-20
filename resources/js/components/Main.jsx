@@ -9,24 +9,24 @@ function Main() {
     const [ parachute, setParachute ] = useState( new Image() );
     const [ cloud, setCloud ] = useState( new Image() );
 
-    let [ context, setContext ] = useState({});
-    let [ canvas, setCanvas ] = useState({});
-    let [ imgMeta, setImgMeta ] = useState({});
+    let context = useRef({});
+    let canvas = useRef({});
+    let imgMeta = useRef({});
 
-    //initiate context and images upon component initial render
+    //initiate context.current and images upon component initial render
     let init = () => {
-        setCanvas(prevState => document.getElementById('canvas'));
-        setContext(canvas.getContext('2d')); //context
+        canvas.current = document.getElementById('canvas');
+        context.current = canvas.current.getContext('2d'); //context.current
 
         //set background color
-        context.fillStyle = '#74b9ff';
-        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.current.fillStyle = '#74b9ff';
+        context.current.fillRect(0, 0, canvas.current.width, canvas.current.height);
 
         //set initial coordinates for images
-        setImgMeta({
+        imgMeta.current = {
             plane: {
-                x: (canvas.width-50)/2,
-                y: canvas.height - 50,
+                x: (canvas.current.width-50)/2,
+                y: canvas.current.height - 50,
                 delay: 0
             },
             star: {
@@ -50,7 +50,7 @@ function Main() {
                 delay: 0
             },
             loadedImages: 0
-        });
+        }
 
         //count how many images have loaded
         plane.onload = countLoadedImages;
@@ -71,48 +71,42 @@ function Main() {
     //if loaded images are already 4, increase counter one last time
     //and call the animation
     let countLoadedImages = () => {
-        if(imgMeta.loadedImages === 4){
-            setImgMeta( prevState => ({ ...prevState, loadedImages: prevState.loadedImages + 1 }) );
+        if(imgMeta.current.loadedImages === 4){
+            imgMeta.current.loadedImages += 1;
             draw();
             //requestAnimationFrame(draw);
         }else{
-            setImgMeta( prevState => ({ ...prevState, loadedImages: prevState.loadedImages + 1 }) );
+            imgMeta.current.loadedImages += 1;
         }
     };
     
     
     //draw the game animation
     let draw = () => {
-        if(imgMeta.loadedImages === 5){
-            context.drawImage(plane, imgMeta.plane.x, imgMeta.plane.y, 50, 50);
-            // context.drawImage(star, imgMeta.star.x, imgMeta.star.y, 50, 50);
-            // context.drawImage(bird, imgMeta.bird.x, imgMeta.bird.y, 50, 50);
-            // context.drawImage(parachute, imgMeta.parachute.x, imgMeta.parachute.y, 50, 50);
-            context.drawImage(cloud, imgMeta.cloud.x, imgMeta.cloud.y, 50, 50);
+        if(imgMeta.current.loadedImages === 5){
+            context.current.drawImage(plane, imgMeta.current.plane.x, imgMeta.current.plane.y, 50, 50);
+            // context.current.drawImage(star, imgMeta.current.star.x, imgMeta.current.star.y, 50, 50);
+            // context.current.drawImage(bird, imgMeta.current.bird.x, imgMeta.current.bird.y, 50, 50);
+            // context.current.drawImage(parachute, imgMeta.current.parachute.x, imgMeta.current.parachute.y, 50, 50);
+            context.current.drawImage(cloud, imgMeta.current.cloud.x, imgMeta.current.cloud.y, 50, 50);
         }else{
             alert( '!failed to load images' );
         }
         
         
         //intiate image drops
-        //dropImage( imgMeta.cloud, context, canvas );
-        setImgMeta( prevState => ({ 
-            ...prevState,
-            cloud: { 
-                ...prevState.cloud,
-                y: prevState.cloud.y + 10
-            } 
-        }) );
+        //dropImage( imgMeta.current.cloud, context.current, canvas );
+        imgMeta.current.cloud.y += 10;
         requestAnimationFrame(draw);
     }
 
     /** Drop images from top of canvas to bottom
      * @param { Object } imgMeta the image's meta data to be droped
-     * @param { Object } ctx the canvas context
+     * @param { Object } ctx the canvas context.current
      * @param { Object } cvs the canvas 
      */
     let dropImage = (imgMeta, ctx, cvs) => {
-        imgMeta.y--;
+        imgMeta.current.y--;
     }
 
     useEffect( () => init(), [] );
