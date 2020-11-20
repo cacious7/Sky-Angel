@@ -98,20 +98,18 @@ function Main() {
             alert( '!failed to load images' );
         }
         
-        
         //intiate image drops
-        //dropImage( imgMeta.current.cloud, context.current, canvas );
-        imgMeta.current.cloud.y += 10;
+        dropImage( imgMeta.current.cloud, 5 );
         requestAnimationFrame(draw);
     }
 
     /** Drop images from top of canvas to bottom
-     * @param { Object } imgMeta the image's meta data to be droped
-     * @param { Object } ctx the canvas context.current
-     * @param { Object } cvs the canvas 
+     * @param { Object } img the image's meta data to be dropped
+     * @param { Object } speed the speed to drop the image at
+     * @return { Void }
      */
-    let dropImage = (imgMeta, ctx, cvs) => {
-        imgMeta.current.y--;
+    let dropImage = (img, speed) => {
+        img.y += speed;
     }
 
     useEffect( () => init(), [] );
