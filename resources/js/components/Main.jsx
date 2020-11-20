@@ -13,7 +13,7 @@ function Main() {
     let canvas = useRef({});
     let imgMeta = useRef({});
 
-    //initiate context.current and images upon component initial render
+    //initialize context, variables and images upon component initial render
     let init = () => {
         canvas.current = document.getElementById('canvas');
         context.current = canvas.current.getContext('2d'); //context.current
@@ -25,29 +25,37 @@ function Main() {
         //set initial coordinates for images
         imgMeta.current = {
             plane: {
-                x: (canvas.current.width-50)/2,
-                y: canvas.current.height - 50,
-                delay: 0
+                imgs: [ //plane will always have only one object under imgs
+                    {
+                        x: (canvas.current.width - 75)/2, 
+                        y: canvas.current.height - 50
+                    }
+                ],
+                size: {
+                    width: 50,
+                    height: 50
+                }
             },
             star: {
-                x: 0,
-                y: 0,
-                delay: 1.5
-            },
-            bird: {
-                x: 0,
-                y: 0,
-                delay: .5
+                imgs: [], //will usually have multiple object, so we inialize it as an empty array
+                size: {
+                    width: 50,
+                    height: 50
+                }
             },
             parachute: {
-                x: 0,
-                y: 0,
-                delay: 1.5
+                imgs: [], //will usually have multiple object, so we inialize it as an empty array
+                size: {
+                    width: 50,
+                    height: 50
+                }
             },
             cloud: {
-                x: 0,
-                y: 0,
-                delay: 0
+                imgs: [], //will usually have multiple object, so we inialize it as an empty array
+                size: {
+                    width: 50,
+                    height: 50
+                }
             },
             loadedImages: 0
         }
@@ -82,25 +90,77 @@ function Main() {
     
     //draw the game animation
     let draw = () => {
+        //if images weren't loaded, return
+        if(imgMeta.current.loadedImages != 5){
+            alert( '!failed to load images' );
+            return;
+        }
+
         //clear canvas to prevent drawing multiple duplicate images
         context.current.clearRect(0, 0, canvas.current.width, canvas.current.height);
+
         //set background color
         context.current.fillStyle = '#74b9ff';
         context.current.fillRect(0, 0, canvas.current.width, canvas.current.height);
 
-        if(imgMeta.current.loadedImages === 5){
-            context.current.drawImage(plane, imgMeta.current.plane.x, imgMeta.current.plane.y, 50, 50);
-            // context.current.drawImage(star, imgMeta.current.star.x, imgMeta.current.star.y, 50, 50);
-            // context.current.drawImage(bird, imgMeta.current.bird.x, imgMeta.current.bird.y, 50, 50);
-            // context.current.drawImage(parachute, imgMeta.current.parachute.x, imgMeta.current.parachute.y, 50, 50);
-            context.current.drawImage(cloud, imgMeta.current.cloud.x, imgMeta.current.cloud.y, 50, 50);
-        }else{
-            alert( '!failed to load images' );
-        }
-        
+        //load plane
+        drawImages('plane');
+
+        //load clouds at random x positions
+        randomX('cloud', 3);
+        drawImages('cloud');
+
         //intiate image drops
-        dropImage( imgMeta.current.cloud, 5 );
+        dropImage( imgMeta.current.cloud.imgs[0], 5 );
         requestAnimationFrame(draw);
+    }
+
+    let drawImages = (name) => {
+        switch(name){
+            case 'cloud':
+                const cloudMeta = imgMeta.current.cloud;
+                for( let img of cloudMeta.imgs ){
+                    context.current.drawImage(cloud, img.x, img.y, cloudMeta.size.width, cloudMeta.size.height);
+                }
+            break;
+            case 'bird':
+                const birdMeta = imgMeta.current.bird;
+                for( let img of birdMeta.imgs ){
+                    context.current.drawImage(bird, img.x, img.y, birdMeta.size.width, birdMeta.size.height);
+                }
+            break;
+            case 'parachute':
+                const parachuteMeta = imgMeta.current.parachute;
+                for( let img of parachuteMeta.imgs ){
+                    context.current.drawImage(parachute, img.x, img.y, parachuteMeta.size.width, parachuteMeta.size.height);
+                }
+            break;
+            case 'star':
+                const starMeta = imgMeta.current.star;
+                for( let img of starMeta.imgs ){
+                    context.current.drawImage(star, img.x, img.y, starMeta.size.width, starMeta.size.height);
+                }
+            break;
+            case 'plane':
+                const planeMeta = imgMeta.current.plane;
+                for( let img of planeMeta.imgs ){
+                    context.current.drawImage(plane, img.x, img.y, planeMeta.size.width, planeMeta.size.height);
+                }
+            break;
+        }
+    }
+
+    /**
+     * Randomize the position at which images are drawn along the X axis of the canvas
+     * @param {String} name the name of the image to be drawn
+     * @param {Number} num the number of images to be drawn
+     */
+    const randomX = (name, num) => {
+        let coords = {};
+        for(let i = 0; i < num; i++){
+            coords = { x: Math.random() * canvas.current.width, y: 0 }
+            imgMeta.current[name].imgs.push( coords );
+        }
     }
 
     /** Drop images from top of canvas to bottom

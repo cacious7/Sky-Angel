@@ -29059,6 +29059,8 @@ window.onload = function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -29103,7 +29105,7 @@ function Main() {
 
   var context = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
   var canvas = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
-  var imgMeta = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({}); //initiate context.current and images upon component initial render
+  var imgMeta = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({}); //initialize context, variables and images upon component initial render
 
   var init = function init() {
     canvas.current = document.getElementById('canvas');
@@ -29115,29 +29117,39 @@ function Main() {
 
     imgMeta.current = {
       plane: {
-        x: (canvas.current.width - 50) / 2,
-        y: canvas.current.height - 50,
-        delay: 0
+        imgs: [//plane will always have only one object under imgs
+        {
+          x: (canvas.current.width - 75) / 2,
+          y: canvas.current.height - 50
+        }],
+        size: {
+          width: 50,
+          height: 50
+        }
       },
       star: {
-        x: 0,
-        y: 0,
-        delay: 1.5
-      },
-      bird: {
-        x: 0,
-        y: 0,
-        delay: .5
+        imgs: [],
+        //will usually have multiple object, so we inialize it as an empty array
+        size: {
+          width: 50,
+          height: 50
+        }
       },
       parachute: {
-        x: 0,
-        y: 0,
-        delay: 1.5
+        imgs: [],
+        //will usually have multiple object, so we inialize it as an empty array
+        size: {
+          width: 50,
+          height: 50
+        }
       },
       cloud: {
-        x: 0,
-        y: 0,
-        delay: 0
+        imgs: [],
+        //will usually have multiple object, so we inialize it as an empty array
+        size: {
+          width: 50,
+          height: 50
+        }
       },
       loadedImages: 0
     }; //count how many images have loaded
@@ -29169,25 +29181,142 @@ function Main() {
 
 
   var draw = function draw() {
-    //clear canvas to prevent drawing multiple duplicate images
+    //if images weren't loaded, return
+    if (imgMeta.current.loadedImages != 5) {
+      alert('!failed to load images');
+      return;
+    } //clear canvas to prevent drawing multiple duplicate images
+
+
     context.current.clearRect(0, 0, canvas.current.width, canvas.current.height); //set background color
 
     context.current.fillStyle = '#74b9ff';
-    context.current.fillRect(0, 0, canvas.current.width, canvas.current.height);
+    context.current.fillRect(0, 0, canvas.current.width, canvas.current.height); //load plane
 
-    if (imgMeta.current.loadedImages === 5) {
-      context.current.drawImage(plane, imgMeta.current.plane.x, imgMeta.current.plane.y, 50, 50); // context.current.drawImage(star, imgMeta.current.star.x, imgMeta.current.star.y, 50, 50);
-      // context.current.drawImage(bird, imgMeta.current.bird.x, imgMeta.current.bird.y, 50, 50);
-      // context.current.drawImage(parachute, imgMeta.current.parachute.x, imgMeta.current.parachute.y, 50, 50);
+    drawImages('plane'); //load clouds at random x positions
 
-      context.current.drawImage(cloud, imgMeta.current.cloud.x, imgMeta.current.cloud.y, 50, 50);
-    } else {
-      alert('!failed to load images');
-    } //intiate image drops
+    randomX('cloud', 3);
+    drawImages('cloud'); //intiate image drops
 
-
-    dropImage(imgMeta.current.cloud, 5);
+    dropImage(imgMeta.current.cloud.imgs[0], 5);
     requestAnimationFrame(draw);
+  };
+
+  var drawImages = function drawImages(name) {
+    switch (name) {
+      case 'cloud':
+        var cloudMeta = imgMeta.current.cloud;
+
+        var _iterator = _createForOfIteratorHelper(cloudMeta.imgs),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var img = _step.value;
+            context.current.drawImage(cloud, img.x, img.y, cloudMeta.size.width, cloudMeta.size.height);
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+
+        break;
+
+      case 'bird':
+        var birdMeta = imgMeta.current.bird;
+
+        var _iterator2 = _createForOfIteratorHelper(birdMeta.imgs),
+            _step2;
+
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var _img = _step2.value;
+            context.current.drawImage(bird, _img.x, _img.y, birdMeta.size.width, birdMeta.size.height);
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
+
+        break;
+
+      case 'parachute':
+        var parachuteMeta = imgMeta.current.parachute;
+
+        var _iterator3 = _createForOfIteratorHelper(parachuteMeta.imgs),
+            _step3;
+
+        try {
+          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+            var _img2 = _step3.value;
+            context.current.drawImage(parachute, _img2.x, _img2.y, parachuteMeta.size.width, parachuteMeta.size.height);
+          }
+        } catch (err) {
+          _iterator3.e(err);
+        } finally {
+          _iterator3.f();
+        }
+
+        break;
+
+      case 'star':
+        var starMeta = imgMeta.current.star;
+
+        var _iterator4 = _createForOfIteratorHelper(starMeta.imgs),
+            _step4;
+
+        try {
+          for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+            var _img3 = _step4.value;
+            context.current.drawImage(star, _img3.x, _img3.y, starMeta.size.width, starMeta.size.height);
+          }
+        } catch (err) {
+          _iterator4.e(err);
+        } finally {
+          _iterator4.f();
+        }
+
+        break;
+
+      case 'plane':
+        var planeMeta = imgMeta.current.plane;
+
+        var _iterator5 = _createForOfIteratorHelper(planeMeta.imgs),
+            _step5;
+
+        try {
+          for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+            var _img4 = _step5.value;
+            context.current.drawImage(plane, _img4.x, _img4.y, planeMeta.size.width, planeMeta.size.height);
+          }
+        } catch (err) {
+          _iterator5.e(err);
+        } finally {
+          _iterator5.f();
+        }
+
+        break;
+    }
+  };
+  /**
+   * Randomize the position at which images are drawn along the X axis of the canvas
+   * @param {String} name the name of the image to be drawn
+   * @param {Number} num the number of images to be drawn
+   */
+
+
+  var randomX = function randomX(name, num) {
+    var coords = {};
+
+    for (var i = 0; i < num; i++) {
+      coords = {
+        x: Math.random() * canvas.current.width,
+        y: 0
+      };
+      imgMeta.current[name].imgs.push(coords);
+    }
   };
   /** Drop images from top of canvas to bottom
    * @param { Object } img the image's meta data to be dropped
