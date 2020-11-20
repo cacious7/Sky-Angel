@@ -8,11 +8,13 @@ function Main() {
     const [ bird, setBird ] = useState( new Image() );
     const [ parachute, setParachute ] = useState( new Image() );
     const [ cloud, setCloud ] = useState( new Image() );
-    const [ gameOver, setGameOver ] = useState( false );
+    const [ fuel, setFuel ] = useState(10);
+    const [ stars, setStars ] = useState(0);
 
     let context = useRef({});
     let canvas = useRef({});
     let imgMeta = useRef({});
+    let gameOver = useRef(false);
 
     //initialize context, variables and images upon component initial render
     let init = () => {
@@ -160,7 +162,6 @@ function Main() {
     
     //draw the game animation
     let draw = (timestamp) => {
-        console.log(timestamp);
         //if images weren't loaded, return
         if(imgMeta.current.loadedImages != 5){
             alert( '!failed to load images' );
@@ -179,6 +180,9 @@ function Main() {
         //#PLANE
         //load plane
         drawImages('plane');
+        
+        //fuel monitoring
+        fuelMonitor(timestamp);
 
         //#CLOUDS
         animateImg('cloud', timestamp);
@@ -198,6 +202,16 @@ function Main() {
         requestAnimationFrame(draw);
     }
 
+    //monitor the fuel
+    let fuelMonitor = (timestamp) => {
+        timeMonitor('plane', timestamp);
+        if( imgMeta.current.plane.time.elapsed >= 1000 ){
+            resetTimeMonitor('plane');
+            setFuel( prevState => prevState -= 1 );
+            if(fuel == 0) gameOver = true;
+        }
+    }
+
     //Count a loaded image
     //if loaded images are already 4, increase counter one last time
     //and call the animation
@@ -210,43 +224,108 @@ function Main() {
         }
     };
 
+    //track side coordinates of all images of a specific type
     let trackSideCoords = (name) => {
-        let sideCoords = {};
-        let top = [];
+        let area = {};
+        const top = [ ...topBottomCoords(name, 'top') ];
+        const bottom = [ ...topBottomCoords(name, 'bottom') ];
+        const left = [ ...leftRightCoords(name, 'left') ];
+        const right = [ ...leftRightCoords(name, 'right') ];
 
+        area = {
+            top: top,
+            bottom: bottom,
+            left: left,
+            right: right
+        }
 
+        //console.log(area);
+        //update image type area coords for all images of that type
+        imgMeta.current[name].area = area;
     }
 
-    //top coords of all images of an image type
-    let topCoords = (name) => {
+    //returns the top or bottom coords
+    let topBottomCoords = (name, side) => {
         //range = x -> x + image width
-        //constant = y
+        //constant = y+h or y
         let imgData = imgMeta.current[name];
         let imgs = imgData.imgs;
+        let coords = [];
         imgs.forEach(img => {
-            const yConstant = img.y;
+            let yConstant;
+            if(side == 'bottom'){
+                yConstant = img.y + imgData.size.height;
+            }else if(side == 'top'){
+                yConstant = img.y;
+            }
+            
             const xRange = getRange( img.x, img.x + imgData.size.width );
+            let imgCoords = [];
+            //all x coords must be paired with the yConstant
+            xRange.forEach( xCoord => {
+                imgCoords.push( { x: xCoord, y: yConstant } );
+            });
+            coords.push( ...imgCoords );
         });
+        return coords;
+    }
+
+    let leftRightCoords = (name, side) => {
+        //range = y -> y + image height
+        //constant = x or x + width
+        let imgData = imgMeta.current[name];
+        let imgs = imgData.imgs;
+        let coords = [];
+        imgs.forEach(img => {
+            let xConstant;
+            if(side == 'right'){
+                xConstant = img.x + imgData.size.width;
+            }else if(side == 'top'){
+                xConstant = img.x;
+            }
+            
+            const yRange = getRange( img.y, img.y + imgData.size.height );
+            let imgCoords = [];
+            //all y coords must be paired with the xConstant
+            yRange.forEach( yCoord => {
+                imgCoords.push( { x: xConstant, y: yCoord } );
+            });
+            coords.push( ...imgCoords );
+        });
+        return coords;
+    }
+
+    //returns the range of two values
+    let getRange = (min, max) => {
+        let range = [];
+        for(let i = min; i <= max; i++){
+            range.push(i);
+        }
+        //console.log(range);
+        return range;
     }
 
     let collisionDetected = (name) => {
         let planeMeta = imgMeta.current.plane;
         let imgCoords = imgMeta.current[name].imgs;
 
+        if(imgCoords.length == 0) return false;
+
         //The x position of the img is >=  the x position of the plane
         //The x position of the img is <= the x position of the plane plus its width
         //The y position of the img is >= the y position of the plane
         //The y position of the img is <= the y position of the plane plus its height
         
-        let detected = imgCoords.every( (img) => {
+        let detected = imgCoords.some( (img) => {
             if( (img.x >= planeMeta.imgs[0].x && ( img.x <= planeMeta.imgs[0].x + planeMeta.size.width ))
             && (img.y >= planeMeta.imgs[0].y && ( img.y <= planeMeta.imgs[0].y + planeMeta.size.height))){
-                alert('Collision Detected with ' + name);
                 return true;
             }else{
                 return false;
             }
         });
+
+        if(detected) alert('Collision Detected with ' + name);
 
         return detected;
     }
@@ -261,9 +340,48 @@ function Main() {
 
         //draw and drop cloud images
         drawImages(name);
-        let collionDetected = collisionDetected('bird');
+
+        //track coordinates of each image type
+        // trackSideCoords('bird');
+        // trackSideCoords('plane');
+        let detected = collisionDetected('bird');
+        if(Boolean(detected)){
+            gameOver.current = true;
+        }
         dropImages(name);
     };
+
+    //check for collision by making sure no plane coordinate is present in any of the 
+    //image area coordinates
+    let cd = (name) => {
+        let imgData = imgMeta.current[name];
+        //image area coords
+        let coords = joinAllCoords(imgData);
+
+        //plane area coords
+        let planeAreaCoords = joinAllCoords( imgMeta.current.plane );
+
+        //check collision
+        //console.log(planeAreaCoords);
+        let detected = planeAreaCoords.some( coord => {
+            let match = coords.some( imgCoord => {
+                return coord.x == imgCoord.x && coord.y == imgCoord.y
+            } );
+
+            console.log( match );
+            return match;
+        } );
+
+        return detected;
+    }
+
+    //joins all the area coordinates of a given image type
+    let joinAllCoords = (imgData) => {
+        let area = imgData.area;
+        let coords = [ ...area.top, ...area.bottom, ...area.left, ...area.right ];
+        //console.log(coords)
+        return coords;
+    }
 
     /**
      * Stops time monitoring for a specific image
@@ -283,7 +401,7 @@ function Main() {
      * @param {Number} timestamp timestamp gotten from requestAnimationFrame
      * @return {Number} the time elapsed
      */
-    let timeMonitor = ( name, timestamp, reset ) => {
+    let timeMonitor = ( name, timestamp ) => {
         const startTime = imgMeta.current[name].time.start;
         const monitoring = imgMeta.current[name].time.monitoring;
         //if start time has been set / time monitoring has began
@@ -364,10 +482,11 @@ function Main() {
         imgMeta.current[name].imgs.forEach( img => img.y += imgMeta.current[name].gravity );
     }
 
-    useEffect( () => init(), [] );
+    useEffect( () => init(), []);
 
     return (
         <div className="container">
+            <div style={ { display: 'flex' } }> <p><strong>Fuel:</strong> {fuel}, <strong>Stars:</strong> {stars}</p> </div>
             <canvas width='400px' height='400px' id='canvas'>
                 Your browser does not support Canvas, please use a more recent browser such as google chrome!
             </canvas>

@@ -29061,6 +29061,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -29103,14 +29111,20 @@ function Main() {
       cloud = _useState10[0],
       setCloud = _useState10[1];
 
-  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(false),
+  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(10),
       _useState12 = _slicedToArray(_useState11, 2),
-      gameOver = _useState12[0],
-      setGameOver = _useState12[1];
+      fuel = _useState12[0],
+      setFuel = _useState12[1];
+
+  var _useState13 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0),
+      _useState14 = _slicedToArray(_useState13, 2),
+      stars = _useState14[0],
+      setStars = _useState14[1];
 
   var context = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
   var canvas = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
-  var imgMeta = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({}); //initialize context, variables and images upon component initial render
+  var imgMeta = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
+  var gameOver = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(false); //initialize context, variables and images upon component initial render
 
   var init = function init() {
     canvas.current = document.getElementById('canvas');
@@ -29272,8 +29286,7 @@ function Main() {
 
 
   var draw = function draw(timestamp) {
-    console.log(timestamp); //if images weren't loaded, return
-
+    //if images weren't loaded, return
     if (imgMeta.current.loadedImages != 5) {
       alert('!failed to load images');
       return;
@@ -29287,7 +29300,9 @@ function Main() {
     //#PLANE
     //load plane
 
-    drawImages('plane'); //#CLOUDS
+    drawImages('plane'); //fuel monitoring
+
+    fuelMonitor(timestamp); //#CLOUDS
 
     animateImg('cloud', timestamp); //#BIRDS
 
@@ -29299,6 +29314,19 @@ function Main() {
     //get animation fram
 
     requestAnimationFrame(draw);
+  }; //monitor the fuel
+
+
+  var fuelMonitor = function fuelMonitor(timestamp) {
+    timeMonitor('plane', timestamp);
+
+    if (imgMeta.current.plane.time.elapsed >= 1000) {
+      resetTimeMonitor('plane');
+      setFuel(function (prevState) {
+        return prevState -= 1;
+      });
+      if (fuel == 0) gameOver = true;
+    }
   }; //Count a loaded image
   //if loaded images are already 4, increase counter one last time
   //and call the animation
@@ -29311,40 +29339,118 @@ function Main() {
     } else {
       imgMeta.current.loadedImages += 1;
     }
-  };
+  }; //track side coordinates of all images of a specific type
+
 
   var trackSideCoords = function trackSideCoords(name) {
-    var sideCoords = {};
-    var top = [];
-  }; //top coords of all images of an image type
+    var area = {};
+
+    var top = _toConsumableArray(topBottomCoords(name, 'top'));
+
+    var bottom = _toConsumableArray(topBottomCoords(name, 'bottom'));
+
+    var left = _toConsumableArray(leftRightCoords(name, 'left'));
+
+    var right = _toConsumableArray(leftRightCoords(name, 'right'));
+
+    area = {
+      top: top,
+      bottom: bottom,
+      left: left,
+      right: right
+    }; //console.log(area);
+    //update image type area coords for all images of that type
+
+    imgMeta.current[name].area = area;
+  }; //returns the top or bottom coords
 
 
-  var topCoords = function topCoords(name) {
+  var topBottomCoords = function topBottomCoords(name, side) {
     //range = x -> x + image width
-    //constant = y
+    //constant = y+h or y
     var imgData = imgMeta.current[name];
     var imgs = imgData.imgs;
+    var coords = [];
     imgs.forEach(function (img) {
-      var yConstant = img.y;
+      var yConstant;
+
+      if (side == 'bottom') {
+        yConstant = img.y + imgData.size.height;
+      } else if (side == 'top') {
+        yConstant = img.y;
+      }
+
       var xRange = getRange(img.x, img.x + imgData.size.width);
+      var imgCoords = []; //all x coords must be paired with the yConstant
+
+      xRange.forEach(function (xCoord) {
+        imgCoords.push({
+          x: xCoord,
+          y: yConstant
+        });
+      });
+      coords.push.apply(coords, imgCoords);
     });
+    return coords;
+  };
+
+  var leftRightCoords = function leftRightCoords(name, side) {
+    //range = y -> y + image height
+    //constant = x or x + width
+    var imgData = imgMeta.current[name];
+    var imgs = imgData.imgs;
+    var coords = [];
+    imgs.forEach(function (img) {
+      var xConstant;
+
+      if (side == 'right') {
+        xConstant = img.x + imgData.size.width;
+      } else if (side == 'top') {
+        xConstant = img.x;
+      }
+
+      var yRange = getRange(img.y, img.y + imgData.size.height);
+      var imgCoords = []; //all y coords must be paired with the xConstant
+
+      yRange.forEach(function (yCoord) {
+        imgCoords.push({
+          x: xConstant,
+          y: yCoord
+        });
+      });
+      coords.push.apply(coords, imgCoords);
+    });
+    return coords;
+  }; //returns the range of two values
+
+
+  var getRange = function getRange(min, max) {
+    var range = [];
+
+    for (var i = min; i <= max; i++) {
+      range.push(i);
+    } //console.log(range);
+
+
+    return range;
   };
 
   var collisionDetected = function collisionDetected(name) {
     var planeMeta = imgMeta.current.plane;
-    var imgCoords = imgMeta.current[name].imgs; //The x position of the img is >=  the x position of the plane
+    var imgCoords = imgMeta.current[name].imgs;
+    if (imgCoords.length == 0) return false; //The x position of the img is >=  the x position of the plane
     //The x position of the img is <= the x position of the plane plus its width
     //The y position of the img is >= the y position of the plane
     //The y position of the img is <= the y position of the plane plus its height
 
-    var detected = imgCoords.every(function (img) {
+    var detected = imgCoords.some(function (img) {
       if (img.x >= planeMeta.imgs[0].x && img.x <= planeMeta.imgs[0].x + planeMeta.size.width && img.y >= planeMeta.imgs[0].y && img.y <= planeMeta.imgs[0].y + planeMeta.size.height) {
-        alert('Collision Detected with ' + name);
         return true;
       } else {
         return false;
       }
     });
+    if (detected) alert('Collision Detected with ' + name);
     return detected;
   };
 
@@ -29358,9 +29464,45 @@ function Main() {
     } //draw and drop cloud images
 
 
-    drawImages(name);
-    var collionDetected = collisionDetected('bird');
+    drawImages(name); //track coordinates of each image type
+    // trackSideCoords('bird');
+    // trackSideCoords('plane');
+
+    var detected = collisionDetected('bird');
+
+    if (Boolean(detected)) {
+      gameOver.current = true;
+    }
+
     dropImages(name);
+  }; //check for collision by making sure no plane coordinate is present in any of the 
+  //image area coordinates
+
+
+  var cd = function cd(name) {
+    var imgData = imgMeta.current[name]; //image area coords
+
+    var coords = joinAllCoords(imgData); //plane area coords
+
+    var planeAreaCoords = joinAllCoords(imgMeta.current.plane); //check collision
+    //console.log(planeAreaCoords);
+
+    var detected = planeAreaCoords.some(function (coord) {
+      var match = coords.some(function (imgCoord) {
+        return coord.x == imgCoord.x && coord.y == imgCoord.y;
+      });
+      console.log(match);
+      return match;
+    });
+    return detected;
+  }; //joins all the area coordinates of a given image type
+
+
+  var joinAllCoords = function joinAllCoords(imgData) {
+    var area = imgData.area;
+    var coords = [].concat(_toConsumableArray(area.top), _toConsumableArray(area.bottom), _toConsumableArray(area.left), _toConsumableArray(area.right)); //console.log(coords)
+
+    return coords;
   };
   /**
    * Stops time monitoring for a specific image
@@ -29382,7 +29524,7 @@ function Main() {
    */
 
 
-  var timeMonitor = function timeMonitor(name, timestamp, reset) {
+  var timeMonitor = function timeMonitor(name, timestamp) {
     var startTime = imgMeta.current[name].time.start;
     var monitoring = imgMeta.current[name].time.monitoring; //if start time has been set / time monitoring has began
     //return time difference
@@ -29540,7 +29682,11 @@ function Main() {
   }, []);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "container"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("canvas", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    style: {
+      display: 'flex'
+    }
+  }, " ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Fuel:"), " ", fuel, ", ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Stars:"), " ", stars), " "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("canvas", {
     width: "400px",
     height: "400px",
     id: "canvas"
@@ -29569,8 +29715,8 @@ function Main() {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! F:\xampp\htdocs\Sky-Angel\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! F:\xampp\htdocs\Sky-Angel\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\cacious\Documents\Cacious\Sky-Angel\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\cacious\Documents\Cacious\Sky-Angel\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
