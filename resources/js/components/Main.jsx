@@ -88,7 +88,7 @@ function Main() {
                     start: null,
                     current: null,
                     elapsed: 0,
-                    visibility: 6000
+                    visibility: 4000
                 }, //counts time in milliseconds
                 maxDrop: 3, // maximum number of images droped at a go //counts time in milliseconds
                 area: { //arrays that take objects of coordinates of each side of an object
@@ -110,7 +110,7 @@ function Main() {
                     start: null,
                     current: null,
                     elapsed: 0,
-                    visibility: 8000
+                    visibility: 3000
                 }, //counts time in milliseconds
                 maxDrop: 2, // maximum number of images droped at a go //counts time in milliseconds
                 area: { //arrays that take objects of coordinates of each side of an object
@@ -158,6 +158,9 @@ function Main() {
         bird.src = 'images/bird.png';
         parachute.src = 'images/parachute.png';
         cloud.src = 'images/cloud.png';
+
+        //set control key event listener
+        document.onkeyup = controlKeyMonitor;
     }
     
     //draw the game animation
@@ -202,6 +205,39 @@ function Main() {
         requestAnimationFrame(draw);
     }
 
+    //control keys mmonitor
+    let controlKeyMonitor = (e) => {
+        e.preventDefault();
+        const leftArrow = 37;
+        const upArrow = 38;
+        const rightArrow = 39;
+        const downArrow = 40;
+
+        switch(e.keyCode){
+            case leftArrow:
+                if(imgMeta.current.plane.imgs[0].x > 10){
+                    imgMeta.current.plane.imgs[0].x--;
+                }
+            break;
+            case upArrow:
+                if(imgMeta.current.plane.imgs[0].y > 10){
+                    imgMeta.current.plane.imgs[0].x--;
+                }
+            break;
+            case rightArrow:
+                if(canvas.width - imgMeta.current.plane.imgs[0].x > 10){
+                    imgMeta.current.plane.imgs[0].x++;
+                }
+            break;
+            case downArrow:
+                if(canvas.height - imgMeta.current.plane.imgs[0].y > 50){
+                    imgMeta.current.plane.imgs[0].y++;
+        --}
+            break;
+        }
+        console.log( e.keyCode );
+    }
+
     //monitor the fuel
     let fuelMonitor = (timestamp) => {
         timeMonitor('plane', timestamp);
@@ -209,6 +245,11 @@ function Main() {
             resetTimeMonitor('plane');
             setFuel( prevState => prevState -= 1 );
             if(fuel == 0) gameOver = true;
+        }
+
+        let detected = collisionDetected('parachute');
+        if(detected.status){
+            setFuel( prevState => prevState += 1);
         }
     }
 
@@ -224,87 +265,6 @@ function Main() {
         }
     };
 
-    //track side coordinates of all images of a specific type
-    let trackSideCoords = (name) => {
-        let area = {};
-        const top = [ ...topBottomCoords(name, 'top') ];
-        const bottom = [ ...topBottomCoords(name, 'bottom') ];
-        const left = [ ...leftRightCoords(name, 'left') ];
-        const right = [ ...leftRightCoords(name, 'right') ];
-
-        area = {
-            top: top,
-            bottom: bottom,
-            left: left,
-            right: right
-        }
-
-        //console.log(area);
-        //update image type area coords for all images of that type
-        imgMeta.current[name].area = area;
-    }
-
-    //returns the top or bottom coords
-    let topBottomCoords = (name, side) => {
-        //range = x -> x + image width
-        //constant = y+h or y
-        let imgData = imgMeta.current[name];
-        let imgs = imgData.imgs;
-        let coords = [];
-        imgs.forEach(img => {
-            let yConstant;
-            if(side == 'bottom'){
-                yConstant = img.y + imgData.size.height;
-            }else if(side == 'top'){
-                yConstant = img.y;
-            }
-            
-            const xRange = getRange( img.x, img.x + imgData.size.width );
-            let imgCoords = [];
-            //all x coords must be paired with the yConstant
-            xRange.forEach( xCoord => {
-                imgCoords.push( { x: xCoord, y: yConstant } );
-            });
-            coords.push( ...imgCoords );
-        });
-        return coords;
-    }
-
-    let leftRightCoords = (name, side) => {
-        //range = y -> y + image height
-        //constant = x or x + width
-        let imgData = imgMeta.current[name];
-        let imgs = imgData.imgs;
-        let coords = [];
-        imgs.forEach(img => {
-            let xConstant;
-            if(side == 'right'){
-                xConstant = img.x + imgData.size.width;
-            }else if(side == 'top'){
-                xConstant = img.x;
-            }
-            
-            const yRange = getRange( img.y, img.y + imgData.size.height );
-            let imgCoords = [];
-            //all y coords must be paired with the xConstant
-            yRange.forEach( yCoord => {
-                imgCoords.push( { x: xConstant, y: yCoord } );
-            });
-            coords.push( ...imgCoords );
-        });
-        return coords;
-    }
-
-    //returns the range of two values
-    let getRange = (min, max) => {
-        let range = [];
-        for(let i = min; i <= max; i++){
-            range.push(i);
-        }
-        //console.log(range);
-        return range;
-    }
-
     let collisionDetected = (name) => {
         let planeMeta = imgMeta.current.plane;
         let imgCoords = imgMeta.current[name].imgs;
@@ -315,19 +275,32 @@ function Main() {
         //The x position of the img is <= the x position of the plane plus its width
         //The y position of the img is >= the y position of the plane
         //The y position of the img is <= the y position of the plane plus its height
-        
-        let detected = imgCoords.some( (img) => {
+        let imgIndex = null;
+        let detected = imgCoords.some( (img, i) => {
             if( (img.x >= planeMeta.imgs[0].x && ( img.x <= planeMeta.imgs[0].x + planeMeta.size.width ))
             && (img.y >= planeMeta.imgs[0].y && ( img.y <= planeMeta.imgs[0].y + planeMeta.size.height))){
+                imgIndex = i;
                 return true;
             }else{
                 return false;
             }
         });
 
-        if(detected) alert('Collision Detected with ' + name);
+        //if detected, remove img that collided with plane
+        if(detected){
+            deleteImg(name, imgIndex);
+        }   
+        
+        //if(detected) console.log('Collision Detected with ' + name);
 
-        return detected;
+        return { status: detected, img: imgIndex };
+    }
+
+    //remove an image from animation
+    let deleteImg = (name, index) => {
+        let imgs = imgMeta.current[name].imgs;
+        imgs.splice( index, 1 );
+        //console.log(imgs);
     }
 
     let animateImg = (name, timestamp) => {
@@ -341,47 +314,22 @@ function Main() {
         //draw and drop cloud images
         drawImages(name);
 
-        //track coordinates of each image type
-        // trackSideCoords('bird');
-        // trackSideCoords('plane');
-        let detected = collisionDetected('bird');
-        if(Boolean(detected)){
+        //if bird collided, game over
+        let detectedBird = collisionDetected('bird');
+        if(Boolean(detectedBird.status)){
             gameOver.current = true;
         }
+
+        //check fuel monitor for parachute collision reaction
+
+        //if star collided, increase star count
+        let detectedStar = collisionDetected('star');
+        if(Boolean(detectedStar.status)){
+            setStars( prevState => prevState += 1);
+        }
+
         dropImages(name);
     };
-
-    //check for collision by making sure no plane coordinate is present in any of the 
-    //image area coordinates
-    let cd = (name) => {
-        let imgData = imgMeta.current[name];
-        //image area coords
-        let coords = joinAllCoords(imgData);
-
-        //plane area coords
-        let planeAreaCoords = joinAllCoords( imgMeta.current.plane );
-
-        //check collision
-        //console.log(planeAreaCoords);
-        let detected = planeAreaCoords.some( coord => {
-            let match = coords.some( imgCoord => {
-                return coord.x == imgCoord.x && coord.y == imgCoord.y
-            } );
-
-            console.log( match );
-            return match;
-        } );
-
-        return detected;
-    }
-
-    //joins all the area coordinates of a given image type
-    let joinAllCoords = (imgData) => {
-        let area = imgData.area;
-        let coords = [ ...area.top, ...area.bottom, ...area.left, ...area.right ];
-        //console.log(coords)
-        return coords;
-    }
 
     /**
      * Stops time monitoring for a specific image
@@ -468,7 +416,7 @@ function Main() {
         imgMeta.current[name].imgs = []; //reset the array to prevent piling more objects than desired
         let coords = {};
         for(let i = 0; i < num; i++){
-            coords = { x: Math.random() * canvas.current.width, y: 0 }
+            coords = { x: Math.random() * (canvas.current.width-50), y: 0 }
             imgMeta.current[name].imgs.push( coords );
         }
     }
