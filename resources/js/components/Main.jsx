@@ -1,5 +1,5 @@
 import React from 'react';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useRef} from 'react';
 
 function Main() {
     //initiate state
@@ -9,21 +9,21 @@ function Main() {
     const [ parachute, setParachute ] = useState( new Image() );
     const [ cloud, setCloud ] = useState( new Image() );
 
-    let context = {};
-    let canvas = {};
-    let imgMeta = {};
+    let [ context, setContext ] = useState({});
+    let [ canvas, setCanvas ] = useState({});
+    let [ imgMeta, setImgMeta ] = useState({});
 
     //initiate context and images upon component initial render
     let init = () => {
-        canvas = document.getElementById('canvas');
-        context = canvas.getContext('2d'); //context
+        setCanvas(prevState => document.getElementById('canvas'));
+        setContext(canvas.getContext('2d')); //context
 
         //set background color
         context.fillStyle = '#74b9ff';
         context.fillRect(0, 0, canvas.width, canvas.height);
 
         //set initial coordinates for images
-        imgMeta = {
+        setImgMeta({
             plane: {
                 x: (canvas.width-50)/2,
                 y: canvas.height - 50,
@@ -48,31 +48,61 @@ function Main() {
                 x: 0,
                 y: 0,
                 delay: 0
-            }
-        }
+            },
+            loadedImages: 0
+        });
 
-        //load images
-        plane.onload = () => context.drawImage(plane, imgMeta.plane.x, imgMeta.plane.y, 50, 50);
-        star.onload = () => context.drawImage(star, imgMeta.star.x, imgMeta.star.y, 50, 50);
-        bird.onload = () => context.drawImage(bird, imgMeta.bird.x, imgMeta.bird.y, 50, 50);
-        parachute.onload = () => context.drawImage(parachute, imgMeta.parachute.x, imgMeta.parachute.y, 50, 50);
-        cloud.onload = () => context.drawImage(cloud, imgMeta.cloud.x, imgMeta.cloud.y, 50, 50);
+        //count how many images have loaded
+        plane.onload = countLoadedImages;
+        star.onload = countLoadedImages;
+        bird.onload = countLoadedImages;
+        parachute.onload = countLoadedImages;
+        cloud.onload = countLoadedImages;
 
+        //give images their src to load from
         plane.src = 'images/plane.png';
         star.src = 'images/star.png';
         bird.src = 'images/bird.png';
         parachute.src = 'images/parachute.png';
         cloud.src = 'images/cloud.png';
-
-        draw();
     }
+
+    //Count a loaded image
+    //if loaded images are already 4, increase counter one last time
+    //and call the animation
+    let countLoadedImages = () => {
+        if(imgMeta.loadedImages === 4){
+            setImgMeta( prevState => ({ ...prevState, loadedImages: prevState.loadedImages + 1 }) );
+            draw();
+            //requestAnimationFrame(draw);
+        }else{
+            setImgMeta( prevState => ({ ...prevState, loadedImages: prevState.loadedImages + 1 }) );
+        }
+    };
     
     
     //draw the game animation
     let draw = () => {
+        if(imgMeta.loadedImages === 5){
+            context.drawImage(plane, imgMeta.plane.x, imgMeta.plane.y, 50, 50);
+            // context.drawImage(star, imgMeta.star.x, imgMeta.star.y, 50, 50);
+            // context.drawImage(bird, imgMeta.bird.x, imgMeta.bird.y, 50, 50);
+            // context.drawImage(parachute, imgMeta.parachute.x, imgMeta.parachute.y, 50, 50);
+            context.drawImage(cloud, imgMeta.cloud.x, imgMeta.cloud.y, 50, 50);
+        }else{
+            alert( '!failed to load images' );
+        }
+        
+        
         //intiate image drops
         //dropImage( imgMeta.cloud, context, canvas );
-        imgMeta.cloud.y += 10;
+        setImgMeta( prevState => ({ 
+            ...prevState,
+            cloud: { 
+                ...prevState.cloud,
+                y: prevState.cloud.y + 10
+            } 
+        }) );
         requestAnimationFrame(draw);
     }
 
@@ -85,7 +115,7 @@ function Main() {
         imgMeta.y--;
     }
 
-    useEffect( () => init() );
+    useEffect( () => init(), [] );
 
     return (
         <div className="container">

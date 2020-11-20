@@ -29059,6 +29059,12 @@ window.onload = function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -29101,19 +29107,33 @@ function Main() {
       cloud = _useState10[0],
       setCloud = _useState10[1];
 
-  var context = {};
-  var canvas = {};
-  var imgMeta = {}; //initiate context and images upon component initial render
+  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])({}),
+      _useState12 = _slicedToArray(_useState11, 2),
+      context = _useState12[0],
+      setContext = _useState12[1];
+
+  var _useState13 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])({}),
+      _useState14 = _slicedToArray(_useState13, 2),
+      canvas = _useState14[0],
+      setCanvas = _useState14[1];
+
+  var _useState15 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])({}),
+      _useState16 = _slicedToArray(_useState15, 2),
+      imgMeta = _useState16[0],
+      setImgMeta = _useState16[1]; //initiate context and images upon component initial render
+
 
   var init = function init() {
-    canvas = document.getElementById('canvas');
-    context = canvas.getContext('2d'); //context
+    setCanvas(function (prevState) {
+      return document.getElementById('canvas');
+    });
+    setContext(canvas.getContext('2d')); //context
     //set background color
 
     context.fillStyle = '#74b9ff';
     context.fillRect(0, 0, canvas.width, canvas.height); //set initial coordinates for images
 
-    imgMeta = {
+    setImgMeta({
       plane: {
         x: (canvas.width - 50) / 2,
         y: canvas.height - 50,
@@ -29138,42 +29158,64 @@ function Main() {
         x: 0,
         y: 0,
         delay: 0
-      }
-    }; //load images
+      },
+      loadedImages: 0
+    }); //count how many images have loaded
 
-    plane.onload = function () {
-      return context.drawImage(plane, imgMeta.plane.x, imgMeta.plane.y, 50, 50);
-    };
-
-    star.onload = function () {
-      return context.drawImage(star, imgMeta.star.x, imgMeta.star.y, 50, 50);
-    };
-
-    bird.onload = function () {
-      return context.drawImage(bird, imgMeta.bird.x, imgMeta.bird.y, 50, 50);
-    };
-
-    parachute.onload = function () {
-      return context.drawImage(parachute, imgMeta.parachute.x, imgMeta.parachute.y, 50, 50);
-    };
-
-    cloud.onload = function () {
-      return context.drawImage(cloud, imgMeta.cloud.x, imgMeta.cloud.y, 50, 50);
-    };
+    plane.onload = countLoadedImages;
+    star.onload = countLoadedImages;
+    bird.onload = countLoadedImages;
+    parachute.onload = countLoadedImages;
+    cloud.onload = countLoadedImages; //give images their src to load from
 
     plane.src = 'images/plane.png';
     star.src = 'images/star.png';
     bird.src = 'images/bird.png';
     parachute.src = 'images/parachute.png';
     cloud.src = 'images/cloud.png';
-    draw();
+  }; //Count a loaded image
+  //if loaded images are already 4, increase counter one last time
+  //and call the animation
+
+
+  var countLoadedImages = function countLoadedImages() {
+    if (imgMeta.loadedImages === 4) {
+      setImgMeta(function (prevState) {
+        return _objectSpread(_objectSpread({}, prevState), {}, {
+          loadedImages: prevState.loadedImages + 1
+        });
+      });
+      draw(); //requestAnimationFrame(draw);
+    } else {
+      setImgMeta(function (prevState) {
+        return _objectSpread(_objectSpread({}, prevState), {}, {
+          loadedImages: prevState.loadedImages + 1
+        });
+      });
+    }
   }; //draw the game animation
 
 
   var draw = function draw() {
-    //intiate image drops
+    if (imgMeta.loadedImages === 5) {
+      context.drawImage(plane, imgMeta.plane.x, imgMeta.plane.y, 50, 50); // context.drawImage(star, imgMeta.star.x, imgMeta.star.y, 50, 50);
+      // context.drawImage(bird, imgMeta.bird.x, imgMeta.bird.y, 50, 50);
+      // context.drawImage(parachute, imgMeta.parachute.x, imgMeta.parachute.y, 50, 50);
+
+      context.drawImage(cloud, imgMeta.cloud.x, imgMeta.cloud.y, 50, 50);
+    } else {
+      alert('!failed to load images');
+    } //intiate image drops
     //dropImage( imgMeta.cloud, context, canvas );
-    imgMeta.cloud.y += 10;
+
+
+    setImgMeta(function (prevState) {
+      return _objectSpread(_objectSpread({}, prevState), {}, {
+        cloud: _objectSpread(_objectSpread({}, prevState.cloud), {}, {
+          y: prevState.cloud.y + 10
+        })
+      });
+    });
     requestAnimationFrame(draw);
   };
   /** Drop images from top of canvas to bottom
@@ -29189,7 +29231,7 @@ function Main() {
 
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
     return init();
-  });
+  }, []);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "container"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("canvas", {
