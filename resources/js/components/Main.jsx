@@ -73,8 +73,7 @@ function Main() {
     let countLoadedImages = () => {
         if(imgMeta.current.loadedImages === 4){
             imgMeta.current.loadedImages += 1;
-            draw();
-            //requestAnimationFrame(draw);
+            requestAnimationFrame(draw);
         }else{
             imgMeta.current.loadedImages += 1;
         }
@@ -83,6 +82,12 @@ function Main() {
     
     //draw the game animation
     let draw = () => {
+        //clear canvas to prevent drawing multiple duplicate images
+        context.current.clearRect(0, 0, canvas.current.width, canvas.current.height);
+        //set background color
+        context.current.fillStyle = '#74b9ff';
+        context.current.fillRect(0, 0, canvas.current.width, canvas.current.height);
+
         if(imgMeta.current.loadedImages === 5){
             context.current.drawImage(plane, imgMeta.current.plane.x, imgMeta.current.plane.y, 50, 50);
             // context.current.drawImage(star, imgMeta.current.star.x, imgMeta.current.star.y, 50, 50);
