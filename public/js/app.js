@@ -29103,6 +29103,11 @@ function Main() {
       cloud = _useState10[0],
       setCloud = _useState10[1];
 
+  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(false),
+      _useState12 = _slicedToArray(_useState11, 2),
+      gameOver = _useState12[0],
+      setGameOver = _useState12[1];
+
   var context = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
   var canvas = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
   var imgMeta = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({}); //initialize context, variables and images upon component initial render
@@ -29125,6 +29130,50 @@ function Main() {
         size: {
           width: 50,
           height: 50
+        },
+        gravity: 2,
+        time: {
+          monitoring: false,
+          start: null,
+          current: null,
+          elapsed: 0,
+          visibility: 1300
+        },
+        //counts time in milliseconds
+        maxDrop: 5,
+        // maximum number of images droped at a go //counts time in milliseconds
+        area: {
+          //arrays that take objects of coordinates of each side of an object
+          top: [],
+          bottom: [],
+          right: [],
+          left: []
+        }
+      },
+      bird: {
+        imgs: [],
+        //will usually have multiple object, so we inialize it as an empty array
+        size: {
+          width: 30,
+          height: 30
+        },
+        gravity: 3,
+        time: {
+          monitoring: false,
+          start: null,
+          current: null,
+          elapsed: 0,
+          visibility: 2300
+        },
+        //counts time in milliseconds
+        maxDrop: 12,
+        // maximum number of images droped at a go //counts time in milliseconds
+        area: {
+          //arrays that take objects of coordinates of each side of an object
+          top: [],
+          bottom: [],
+          right: [],
+          left: []
         }
       },
       star: {
@@ -29133,6 +29182,24 @@ function Main() {
         size: {
           width: 50,
           height: 50
+        },
+        gravity: 2.5,
+        time: {
+          monitoring: false,
+          start: null,
+          current: null,
+          elapsed: 0,
+          visibility: 6000
+        },
+        //counts time in milliseconds
+        maxDrop: 3,
+        // maximum number of images droped at a go //counts time in milliseconds
+        area: {
+          //arrays that take objects of coordinates of each side of an object
+          top: [],
+          bottom: [],
+          right: [],
+          left: []
         }
       },
       parachute: {
@@ -29141,6 +29208,24 @@ function Main() {
         size: {
           width: 50,
           height: 50
+        },
+        gravity: 2.5,
+        time: {
+          monitoring: false,
+          start: null,
+          current: null,
+          elapsed: 0,
+          visibility: 8000
+        },
+        //counts time in milliseconds
+        maxDrop: 2,
+        // maximum number of images droped at a go //counts time in milliseconds
+        area: {
+          //arrays that take objects of coordinates of each side of an object
+          top: [],
+          bottom: [],
+          right: [],
+          left: []
         }
       },
       cloud: {
@@ -29149,6 +29234,24 @@ function Main() {
         size: {
           width: 50,
           height: 50
+        },
+        gravity: 6,
+        time: {
+          monitoring: false,
+          start: null,
+          current: null,
+          elapsed: 0,
+          visibility: 1200
+        },
+        //counts time in milliseconds
+        maxDrop: 15,
+        // maximum number of images droped at a go //counts time in milliseconds
+        area: {
+          //arrays that take objects of coordinates of each side of an object
+          top: [],
+          bottom: [],
+          right: [],
+          left: []
         }
       },
       loadedImages: 0
@@ -29165,6 +29268,37 @@ function Main() {
     bird.src = 'images/bird.png';
     parachute.src = 'images/parachute.png';
     cloud.src = 'images/cloud.png';
+  }; //draw the game animation
+
+
+  var draw = function draw(timestamp) {
+    console.log(timestamp); //if images weren't loaded, return
+
+    if (imgMeta.current.loadedImages != 5) {
+      alert('!failed to load images');
+      return;
+    } //clear canvas to prevent drawing multiple duplicate images
+
+
+    context.current.clearRect(0, 0, canvas.current.width, canvas.current.height); //set background color
+
+    context.current.fillStyle = '#74b9ff';
+    context.current.fillRect(0, 0, canvas.current.width, canvas.current.height); //let collionDetected = collisionDetected('bird', bird);
+    //#PLANE
+    //load plane
+
+    drawImages('plane'); //#CLOUDS
+
+    animateImg('cloud', timestamp); //#BIRDS
+
+    animateImg('bird', timestamp); //#PARACHUTES
+
+    animateImg('parachute', timestamp); //#STARS
+
+    animateImg('star', timestamp); //collionDetected = collisionDetected('bird', bird);
+    //get animation fram
+
+    requestAnimationFrame(draw);
   }; //Count a loaded image
   //if loaded images are already 4, increase counter one last time
   //and call the animation
@@ -29177,30 +29311,98 @@ function Main() {
     } else {
       imgMeta.current.loadedImages += 1;
     }
-  }; //draw the game animation
-
-
-  var draw = function draw() {
-    //if images weren't loaded, return
-    if (imgMeta.current.loadedImages != 5) {
-      alert('!failed to load images');
-      return;
-    } //clear canvas to prevent drawing multiple duplicate images
-
-
-    context.current.clearRect(0, 0, canvas.current.width, canvas.current.height); //set background color
-
-    context.current.fillStyle = '#74b9ff';
-    context.current.fillRect(0, 0, canvas.current.width, canvas.current.height); //load plane
-
-    drawImages('plane'); //load clouds at random x positions
-
-    randomX('cloud', 3);
-    drawImages('cloud'); //intiate image drops
-
-    dropImage(imgMeta.current.cloud.imgs[0], 5);
-    requestAnimationFrame(draw);
   };
+
+  var trackSideCoords = function trackSideCoords(name) {
+    var sideCoords = {};
+    var top = [];
+  }; //top coords of all images of an image type
+
+
+  var topCoords = function topCoords(name) {
+    //range = x -> x + image width
+    //constant = y
+    var imgData = imgMeta.current[name];
+    var imgs = imgData.imgs;
+    imgs.forEach(function (img) {
+      var yConstant = img.y;
+      var xRange = getRange(img.x, img.x + imgData.size.width);
+    });
+  };
+
+  var collisionDetected = function collisionDetected(name) {
+    var planeMeta = imgMeta.current.plane;
+    var imgCoords = imgMeta.current[name].imgs; //The x position of the img is >=  the x position of the plane
+    //The x position of the img is <= the x position of the plane plus its width
+    //The y position of the img is >= the y position of the plane
+    //The y position of the img is <= the y position of the plane plus its height
+
+    var detected = imgCoords.every(function (img) {
+      if (img.x >= planeMeta.imgs[0].x && img.x <= planeMeta.imgs[0].x + planeMeta.size.width && img.y >= planeMeta.imgs[0].y && img.y <= planeMeta.imgs[0].y + planeMeta.size.height) {
+        alert('Collision Detected with ' + name);
+        return true;
+      } else {
+        return false;
+      }
+    });
+    return detected;
+  };
+
+  var animateImg = function animateImg(name, timestamp) {
+    //load image at random x positions after a delay
+    timeMonitor(name, timestamp);
+
+    if (imgMeta.current[name].time.elapsed > imgMeta.current[name].time.visibility) {
+      resetTimeMonitor(name);
+      randomX(name, Math.random() * imgMeta.current[name].maxDrop);
+    } //draw and drop cloud images
+
+
+    drawImages(name);
+    var collionDetected = collisionDetected('bird');
+    dropImages(name);
+  };
+  /**
+   * Stops time monitoring for a specific image
+   * @param {String} name name of the image to stop time monitoring
+   */
+
+
+  var resetTimeMonitor = function resetTimeMonitor(name) {
+    imgMeta.current[name].time.monitor = false;
+    imgMeta.current[name].time.start = null;
+    imgMeta.current[name].time.current = null;
+    imgMeta.current[name].time.elapsed = 0;
+  };
+  /**
+   * Monitors and counts time elapsed
+   * @param {String} name the name of the image monitoring time
+   * @param {Number} timestamp timestamp gotten from requestAnimationFrame
+   * @return {Number} the time elapsed
+   */
+
+
+  var timeMonitor = function timeMonitor(name, timestamp, reset) {
+    var startTime = imgMeta.current[name].time.start;
+    var monitoring = imgMeta.current[name].time.monitoring; //if start time has been set / time monitoring has began
+    //return time difference
+    //else return 0
+
+    if (Boolean(startTime) && Boolean(monitoring)) {
+      imgMeta.current[name].time.current = timestamp;
+      imgMeta.current[name].time.elapsed = imgMeta.current[name].time.current - startTime;
+      return imgMeta.current[name].time.elapsed;
+    } else {
+      imgMeta.current[name].time.monitoring = true;
+      imgMeta.current[name].time.start = timestamp;
+      return imgMeta.current[name].time.elapsed;
+    }
+  };
+  /**
+   * Draws images on the canvas
+   * @param {String} name name of the images to e drawn
+   */
+
 
   var drawImages = function drawImages(name) {
     switch (name) {
@@ -29308,6 +29510,8 @@ function Main() {
 
 
   var randomX = function randomX(name, num) {
+    imgMeta.current[name].imgs = []; //reset the array to prevent piling more objects than desired
+
     var coords = {};
 
     for (var i = 0; i < num; i++) {
@@ -29325,8 +29529,10 @@ function Main() {
    */
 
 
-  var dropImage = function dropImage(img, speed) {
-    img.y += speed;
+  var dropImages = function dropImages(name) {
+    imgMeta.current[name].imgs.forEach(function (img) {
+      return img.y += imgMeta.current[name].gravity;
+    });
   };
 
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {

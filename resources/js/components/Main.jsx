@@ -8,6 +8,7 @@ function Main() {
     const [ bird, setBird ] = useState( new Image() );
     const [ parachute, setParachute ] = useState( new Image() );
     const [ cloud, setCloud ] = useState( new Image() );
+    const [ gameOver, setGameOver ] = useState( false );
 
     let context = useRef({});
     let canvas = useRef({});
@@ -34,6 +35,43 @@ function Main() {
                 size: {
                     width: 50,
                     height: 50
+                },
+                gravity: 2,
+                time: {
+                    monitoring: false,
+                    start: null,
+                    current: null,
+                    elapsed: 0,
+                    visibility: 1300
+                }, //counts time in milliseconds
+                maxDrop: 5, // maximum number of images droped at a go //counts time in milliseconds
+                area: { //arrays that take objects of coordinates of each side of an object
+                    top: [],
+                    bottom: [],
+                    right: [],
+                    left: []
+                }
+            },
+            bird: {
+                imgs: [], //will usually have multiple object, so we inialize it as an empty array
+                size: {
+                    width: 30,
+                    height: 30
+                },
+                gravity: 3,
+                time: {
+                    monitoring: false,
+                    start: null,
+                    current: null,
+                    elapsed: 0,
+                    visibility: 2300
+                }, //counts time in milliseconds
+                maxDrop: 12, // maximum number of images droped at a go //counts time in milliseconds
+                area: { //arrays that take objects of coordinates of each side of an object
+                    top: [],
+                    bottom: [],
+                    right: [],
+                    left: []
                 }
             },
             star: {
@@ -41,6 +79,21 @@ function Main() {
                 size: {
                     width: 50,
                     height: 50
+                },
+                gravity: 2.5,
+                time: {
+                    monitoring: false,
+                    start: null,
+                    current: null,
+                    elapsed: 0,
+                    visibility: 6000
+                }, //counts time in milliseconds
+                maxDrop: 3, // maximum number of images droped at a go //counts time in milliseconds
+                area: { //arrays that take objects of coordinates of each side of an object
+                    top: [],
+                    bottom: [],
+                    right: [],
+                    left: []
                 }
             },
             parachute: {
@@ -48,6 +101,21 @@ function Main() {
                 size: {
                     width: 50,
                     height: 50
+                },
+                gravity: 2.5,
+                time: {
+                    monitoring: false,
+                    start: null,
+                    current: null,
+                    elapsed: 0,
+                    visibility: 8000
+                }, //counts time in milliseconds
+                maxDrop: 2, // maximum number of images droped at a go //counts time in milliseconds
+                area: { //arrays that take objects of coordinates of each side of an object
+                    top: [],
+                    bottom: [],
+                    right: [],
+                    left: []
                 }
             },
             cloud: {
@@ -55,9 +123,24 @@ function Main() {
                 size: {
                     width: 50,
                     height: 50
+                },
+                gravity: 6,
+                time: {
+                    monitoring: false,
+                    start: null,
+                    current: null,
+                    elapsed: 0,
+                    visibility: 1200
+                }, //counts time in milliseconds
+                maxDrop: 15, // maximum number of images droped at a go //counts time in milliseconds
+                area: { //arrays that take objects of coordinates of each side of an object
+                    top: [],
+                    bottom: [],
+                    right: [],
+                    left: []
                 }
             },
-            loadedImages: 0
+            loadedImages: 0,
         }
 
         //count how many images have loaded
@@ -74,22 +157,10 @@ function Main() {
         parachute.src = 'images/parachute.png';
         cloud.src = 'images/cloud.png';
     }
-
-    //Count a loaded image
-    //if loaded images are already 4, increase counter one last time
-    //and call the animation
-    let countLoadedImages = () => {
-        if(imgMeta.current.loadedImages === 4){
-            imgMeta.current.loadedImages += 1;
-            requestAnimationFrame(draw);
-        }else{
-            imgMeta.current.loadedImages += 1;
-        }
-    };
-    
     
     //draw the game animation
-    let draw = () => {
+    let draw = (timestamp) => {
+        console.log(timestamp);
         //if images weren't loaded, return
         if(imgMeta.current.loadedImages != 5){
             alert( '!failed to load images' );
@@ -103,18 +174,138 @@ function Main() {
         context.current.fillStyle = '#74b9ff';
         context.current.fillRect(0, 0, canvas.current.width, canvas.current.height);
 
+        //let collionDetected = collisionDetected('bird', bird);
+
+        //#PLANE
         //load plane
         drawImages('plane');
 
-        //load clouds at random x positions
-        randomX('cloud', 3);
-        drawImages('cloud');
+        //#CLOUDS
+        animateImg('cloud', timestamp);
 
-        //intiate image drops
-        dropImage( imgMeta.current.cloud.imgs[0], 5 );
+        //#BIRDS
+        animateImg('bird', timestamp);
+
+        //#PARACHUTES
+        animateImg('parachute', timestamp);
+
+        //#STARS
+        animateImg('star', timestamp);
+
+        //collionDetected = collisionDetected('bird', bird);
+
+        //get animation fram
         requestAnimationFrame(draw);
     }
 
+    //Count a loaded image
+    //if loaded images are already 4, increase counter one last time
+    //and call the animation
+    let countLoadedImages = () => {
+        if(imgMeta.current.loadedImages === 4){
+            imgMeta.current.loadedImages += 1;
+            requestAnimationFrame(draw);
+        }else{
+            imgMeta.current.loadedImages += 1;
+        }
+    };
+
+    let trackSideCoords = (name) => {
+        let sideCoords = {};
+        let top = [];
+
+
+    }
+
+    //top coords of all images of an image type
+    let topCoords = (name) => {
+        //range = x -> x + image width
+        //constant = y
+        let imgData = imgMeta.current[name];
+        let imgs = imgData.imgs;
+        imgs.forEach(img => {
+            const yConstant = img.y;
+            const xRange = getRange( img.x, img.x + imgData.size.width );
+        });
+    }
+
+    let collisionDetected = (name) => {
+        let planeMeta = imgMeta.current.plane;
+        let imgCoords = imgMeta.current[name].imgs;
+
+        //The x position of the img is >=  the x position of the plane
+        //The x position of the img is <= the x position of the plane plus its width
+        //The y position of the img is >= the y position of the plane
+        //The y position of the img is <= the y position of the plane plus its height
+        
+        let detected = imgCoords.every( (img) => {
+            if( (img.x >= planeMeta.imgs[0].x && ( img.x <= planeMeta.imgs[0].x + planeMeta.size.width ))
+            && (img.y >= planeMeta.imgs[0].y && ( img.y <= planeMeta.imgs[0].y + planeMeta.size.height))){
+                alert('Collision Detected with ' + name);
+                return true;
+            }else{
+                return false;
+            }
+        });
+
+        return detected;
+    }
+
+    let animateImg = (name, timestamp) => {
+        //load image at random x positions after a delay
+        timeMonitor(name, timestamp);
+        if(imgMeta.current[name].time.elapsed > imgMeta.current[name].time.visibility){
+            resetTimeMonitor(name);
+            randomX(name, Math.random() * imgMeta.current[name].maxDrop);
+        }
+
+        //draw and drop cloud images
+        drawImages(name);
+        let collionDetected = collisionDetected('bird');
+        dropImages(name);
+    };
+
+    /**
+     * Stops time monitoring for a specific image
+     * @param {String} name name of the image to stop time monitoring
+     */
+    let resetTimeMonitor = (name) => {
+        imgMeta.current[name].time.monitor = false;
+        imgMeta.current[name].time.start = null;
+        imgMeta.current[name].time.current = null;
+        imgMeta.current[name].time.elapsed = 0;
+
+    }
+
+    /**
+     * Monitors and counts time elapsed
+     * @param {String} name the name of the image monitoring time
+     * @param {Number} timestamp timestamp gotten from requestAnimationFrame
+     * @return {Number} the time elapsed
+     */
+    let timeMonitor = ( name, timestamp, reset ) => {
+        const startTime = imgMeta.current[name].time.start;
+        const monitoring = imgMeta.current[name].time.monitoring;
+        //if start time has been set / time monitoring has began
+        //return time difference
+        //else return 0
+        if(Boolean(startTime) && Boolean(monitoring)){
+            imgMeta.current[name].time.current = timestamp;
+            imgMeta.current[name].time.elapsed = imgMeta.current[name].time.current - startTime;
+            return imgMeta.current[name].time.elapsed;
+        }else{
+            imgMeta.current[name].time.monitoring = true;
+            imgMeta.current[name].time.start = timestamp;
+            return imgMeta.current[name].time.elapsed;
+        }
+
+    }
+
+
+    /**
+     * Draws images on the canvas
+     * @param {String} name name of the images to e drawn
+     */
     let drawImages = (name) => {
         switch(name){
             case 'cloud':
@@ -156,6 +347,7 @@ function Main() {
      * @param {Number} num the number of images to be drawn
      */
     const randomX = (name, num) => {
+        imgMeta.current[name].imgs = []; //reset the array to prevent piling more objects than desired
         let coords = {};
         for(let i = 0; i < num; i++){
             coords = { x: Math.random() * canvas.current.width, y: 0 }
@@ -168,8 +360,8 @@ function Main() {
      * @param { Object } speed the speed to drop the image at
      * @return { Void }
      */
-    let dropImage = (img, speed) => {
-        img.y += speed;
+    let dropImages = (name) => {
+        imgMeta.current[name].imgs.forEach( img => img.y += imgMeta.current[name].gravity );
     }
 
     useEffect( () => init(), [] );
