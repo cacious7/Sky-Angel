@@ -29210,7 +29210,7 @@ function Main() {
     width: "400px",
     height: "400px",
     id: "canvas"
-  }));
+  }, "Your browser does not support Canvas, please use a more recent browser such as google chrome!"));
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Main);

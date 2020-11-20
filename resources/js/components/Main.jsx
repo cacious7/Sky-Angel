@@ -118,7 +118,9 @@ function Main() {
 
     return (
         <div className="container">
-            <canvas width='400px' height='400px' id='canvas'></canvas>
+            <canvas width='400px' height='400px' id='canvas'>
+                Your browser does not support Canvas, please use a more recent browser such as google chrome!
+            </canvas>
         </div>
     );
 }
