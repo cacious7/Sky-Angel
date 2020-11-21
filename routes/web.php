@@ -14,8 +14,13 @@ use App\Http\Controllers\PlayerController;
 |
 */
 
+//the game's home page
  Route::get('/', function(){
      return view('welcome');
  });
+
+ //handles saving of player game data to the database
  Route::post('/save', [PlayerController::class, 'savePlayer'])->name('save.player');
+
+ //handles getting players' saved game data from the database
  Route::get('/getplayers', [PlayerController::class, 'getPlayers'])->name('get.players');

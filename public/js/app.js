@@ -56132,7 +56132,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_Main__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/Main */ "./resources/js/components/Main.jsx");
 
 
-
+ //hooks the react app to the DOM
 
 window.onload = function () {
   if (document.getElementById('sky-angel')) {
@@ -56279,9 +56279,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
+/**
+ * Handles the game's main logic and controls its flow
+ * @return {void}
+ */
 
-function Main() {
-  //initiate state
+var Main = function Main() {
+  //initialize state
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new Image()),
       _useState2 = _slicedToArray(_useState, 2),
       plane = _useState2[0],
@@ -56335,7 +56339,10 @@ function Main() {
   var _useState21 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])([]),
       _useState22 = _slicedToArray(_useState21, 2),
       players = _useState22[0],
-      setPlayers = _useState22[1];
+      setPlayers = _useState22[1]; //these variables' current values are well accessible 
+  //even if the draw function is called by a useEffect function
+  //making it a little easier to manage the state of the game
+
 
   var context = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
   var canvas = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
@@ -56347,7 +56354,11 @@ function Main() {
     start: 0,
     elapsed: 0
   });
-  var animationRef = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(0); //initialize context, variables and images upon component initial render
+  var animationRef = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(0);
+  /**
+   * initialize context, variables and images when beginning the game
+   * @return {void}
+   */
 
   var init = function init() {
     canvas.current = document.getElementById('canvas');
@@ -56514,7 +56525,12 @@ function Main() {
     cloud.src = 'images/cloud.png'; //set control key event listener
 
     document.onkeydown = controlKeyMonitor;
-  }; //draw the game animation
+  };
+  /**
+   * Draws the game and keeps it animated recursively
+   * @param {Number} timestamp The timestamp gotten from the animation frame
+   * @return {void}
+   */
 
 
   var draw = function draw(timestamp) {
@@ -56562,7 +56578,13 @@ function Main() {
 
 
     if (!stopGame.current) requestAnimationFrame(draw);
-  }; //control keys monitor
+  };
+  /**
+   * Enables and monitors the use of the control keys
+   * for the game
+   * @param {Object} e the event triggered
+   * @return {void}
+   */
 
 
   var controlKeyMonitor = function controlKeyMonitor(e) {
@@ -56612,7 +56634,9 @@ function Main() {
   /**
    * Has a timer that resets every second
    * Which is used to monitor fuel and fly time
+   * It also sets the game over status based on the fuel
    * @param {Number} timestamp the time in milliseconds  
+   * @return {void}
    */
 
 
@@ -56638,9 +56662,13 @@ function Main() {
         return prevState += 1;
       });
     }
-  }; //Count a loaded image
-  //if loaded images are already 4, increase counter one last time
-  //and call the animation
+  };
+  /**
+   * Count loaded images, one at a time
+   * if loaded images are already 4, increase counter one last time
+   * and call the animation
+   * @return {void}
+   */
 
 
   var countLoadedImages = function countLoadedImages() {
@@ -56653,14 +56681,18 @@ function Main() {
   };
   /**
    * Detect collision of the plane with another image type
-   * @param {String} name nae of type of image to detect collision with 
+   * @param {String} name nae of type of image to detect collision with
+   * @return {Object} indicating the status of the detection and the index of the image in the image type array
    */
 
 
   var collisionDetected = function collisionDetected(name) {
     var planeMeta = imgMeta.current.plane;
     var imgCoords = imgMeta.current[name].imgs;
-    if (imgCoords.length == 0) return false; //The x position of the img is >=  the x position of the plane
+    if (imgCoords.length == 0) return {
+      status: false,
+      img: null
+    }; //The x position of the img is >=  the x position of the plane
     //The x position of the img is <= the x position of the plane plus its width
     //The y position of the img is >= the y position of the plane
     //The y position of the img is <= the y position of the plane plus its height
@@ -56684,13 +56716,25 @@ function Main() {
       status: detected,
       img: imgIndex
     };
-  }; //remove an image from animation
+  };
+  /**
+   * Deletes a specific single image of a certain type from the animation
+   * @param {String} name the name of the type of image to delete
+   * @param {Number} index the index of the image to delete
+   * @return {void}
+   */
 
 
   var deleteImg = function deleteImg(name, index) {
     var imgs = imgMeta.current[name].imgs;
-    imgs.splice(index, 1); //console.log(imgs);
-  }; //animate an iage type
+    imgs.splice(index, 1);
+  };
+  /**
+   * Animates an image type
+   * @param {String} name the name of the image type to animate
+   * @param {Number} timestamp the timestamp retrieved from the animation frame
+   * @return {void}
+   */
 
 
   var animateImg = function animateImg(name, timestamp) {
@@ -56726,6 +56770,7 @@ function Main() {
   /**
    * resets time monitoring for a specific image type
    * @param {String} name name of the image to stop time monitoring
+   * @return {void}
    */
 
 
@@ -56736,7 +56781,7 @@ function Main() {
     imgMeta.current[name].time.elapsed = 0;
   };
   /**
-   * Monitors and counts time elapsed
+   * Monitors and counts time elapsed for a specific image type
    * @param {String} name the name of the image monitoring time
    * @param {Number} timestamp timestamp gotten from requestAnimationFrame
    * @return {Number} the time elapsed
@@ -56761,7 +56806,8 @@ function Main() {
   };
   /**
    * Draws images on the canvas
-   * @param {String} name name of the images to e drawn
+   * @param {String} name name of the image type to drawn
+   * @return {void}
    */
 
 
@@ -56867,6 +56913,7 @@ function Main() {
    * Randomize the position at which images are drawn along the X axis of the canvas
    * @param {String} name the name of the image to be drawn
    * @param {Number} num the number of images to be drawn
+   * @return {void}
    */
 
 
@@ -56884,8 +56931,7 @@ function Main() {
     }
   };
   /** Drop images from top of canvas to bottom
-   * @param { Object } img the image's meta data to be dropped
-   * @param { Object } speed the speed to drop the image at
+   * @param { String } name the name of the type of image to drop
    * @return { Void }
    */
 
@@ -56898,6 +56944,7 @@ function Main() {
   /**
    * Toggle between game pause and play state
    * @param {Event} e the event that has been triggered
+   * @return {void}
    */
 
 
@@ -56908,16 +56955,30 @@ function Main() {
     setPauseText(paused.current ? 'Play' : 'Pause');
     console.log('game pause clicked', paused.current);
   };
+  /**
+   * starts the game
+   * @param {Object} e event triggered 
+   * @return {void}
+   */
+
 
   var startGame = function startGame(e) {
     setGameStarted(true);
   };
+  /**
+   * Ends the game by resetting the game's status 
+   * and theryby allowing a fresh start
+   * @param {Object} e event triggered 
+   * @return {void}
+   */
+
 
   var endGame = function endGame(e) {
     resetGameData();
   };
   /**
-   * Reset All game data except images
+   * Reset All game data except for images
+   * @return {void}
    */
 
 
@@ -56940,6 +57001,12 @@ function Main() {
     };
     animationRef.current = 0;
   };
+  /**
+   * Displays the correct component or screen
+   * based on the status of the game
+   * @return {void}
+   */
+
 
   var displayByGameStatus = function displayByGameStatus() {
     if (!gameStarted) {
@@ -56965,7 +57032,12 @@ function Main() {
         endGame: endGame
       });
     }
-  }; //save user data to the server
+  };
+  /**
+   * Saves the user's game data to the database
+   * @param {Object} e event triggered 
+   * @return {void}
+   */
 
 
   var handleSave = function handleSave(e) {
@@ -56996,6 +57068,11 @@ function Main() {
       }
     });
   };
+  /**
+   * Gets the players' data from the database
+   * @return {void}
+   */
+
 
   var getPlayers = function getPlayers() {
     jquery__WEBPACK_IMPORTED_MODULE_4___default.a.ajax({
@@ -57012,11 +57089,10 @@ function Main() {
         console.log('error', err);
       }
     });
-  }; //cancel animation
-
+  };
 
   return displayByGameStatus();
-}
+};
 
 /* harmony default export */ __webpack_exports__["default"] = (Main);
 
