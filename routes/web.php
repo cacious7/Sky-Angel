@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PlayerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+ Route::get('/', function(){
+     return view('welcome');
+ });
+ Route::post('/save', [PlayerController::class, 'savePlayer'])->name('save.player');
+ Route::get('/getplayers', [PlayerController::class, 'getPlayers'])->name('get.players');

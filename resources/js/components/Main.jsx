@@ -1,5 +1,9 @@
 import React from 'react';
 import {useEffect, useState, useRef} from 'react';
+import Game from './Game';
+import GameOver from './GameOver';
+import StartGame from './StartGame';
+import $ from 'jquery';
 
 function Main() {
     //initiate state
@@ -12,14 +16,18 @@ function Main() {
     const [ stars, setStars ] = useState(0);
     const [ flyTime, setFlyTime ] = useState(0);
     const [ pauseText, setPauseText ] = useState('Pause');
+    const [ gameStarted, setGameStarted ] = useState(false);
+    const [ players, setPlayers ] = useState([]);
 
 
     let context = useRef({});
     let canvas = useRef({});
     let imgMeta = useRef({});
     let gameOver = useRef(false);
+    let stopGame = useRef(false);
     let paused = useRef(false);
     let timePaused = useRef({ start: 0, elapsed: 0 });
+    let animationRef = useRef(0);
 
     //initialize context, variables and images upon component initial render
     let init = () => {
@@ -182,8 +190,7 @@ function Main() {
             alert( '!failed to load images' );
             return;
         }
-
-        console.log('gameOver = ', gameOver.current);
+        console.log('ref', animationRef);
 
         //if game is paused, dont animate
         if( !paused.current ){
@@ -231,13 +238,13 @@ function Main() {
             //console.log('Time Paused = ',timePaused.current.elapsed);
             
         }
-        //request animation frame
+        //request animation frame if the game is not over yet
+        if(!stopGame.current)
         requestAnimationFrame(draw);
     }
 
     //control keys monitor
     let controlKeyMonitor = (e) => {
-        e.preventDefault();
         const leftArrow = 37;
         const upArrow = 38;
         const rightArrow = 39;
@@ -302,7 +309,7 @@ function Main() {
     let countLoadedImages = () => {
         if(imgMeta.current.loadedImages === 4){
             imgMeta.current.loadedImages += 1;
-            requestAnimationFrame(draw);
+            animationRef = requestAnimationFrame(draw);
         }else{
             imgMeta.current.loadedImages += 1;
         }
@@ -350,6 +357,8 @@ function Main() {
         //console.log(imgs);
     }
 
+
+    //animate an iage type
     let animateImg = (name, timestamp) => {
         //load image at random x positions after a delay
         timeMonitor(name, timestamp);
@@ -488,31 +497,99 @@ function Main() {
         console.log('game pause clicked', paused.current);
     }
 
-    //Initializes the game only once
-    useEffect( () => init(), []);
+    let startGame = (e) => {
+        setGameStarted(true);
+    }
+
+    let endGame = (e) => {
+        resetGameData();
+    }
+
+    /**
+     * Reset All game data except images
+     */
+    let resetGameData = () => {
+        setFuel(10);
+        setStars(0);
+        setFlyTime(0);
+        setPauseText('pause');
+        setGameStarted(false);
+        setPlayers([]);
+    
+        context.current = {};
+        canvas.current = {};
+        imgMeta.current = {};
+        gameOver.current = false;
+        stopGame.current = false;
+        paused.current = false;
+        timePaused.current = { start: 0, elapsed: 0 }
+        animationRef.current = 0;
+    }
 
     let displayByGameStatus = () => {
-        if(!gameOver){
+        if(!gameStarted){
             return(
-            <div className="container">
-                <div style={ { display: 'flex' } }> <p><strong>Fuel:</strong> {fuel}, <strong>Stars:</strong> {stars}, <strong>Fly Time:</strong> {flyTime}</p> 
-                    <button id='pause-game' onClick={handlePause}>{pauseText}</button>
-                </div>
-                <canvas width='400px' height='400px' id='canvas' onClick={handlePause} >
-                    Your browser does not support Canvas, please use a more recent browser such as google chrome!
-                </canvas>   
-            </div>
+                <StartGame startGame={startGame} getPlayers={getPlayers} players={players} setPlayers={setPlayers}/>
             );
-        }else{
+        }else if(!gameOver.current && gameStarted){
             return(
-                <div className="container">
-                
-
-                </div>
+            <Game init={init} fuel={fuel} stars={stars} flyTime={flyTime} handlePause={handlePause} pauseText={pauseText}/>
+            );
+        }else if(gameOver.current){
+            return(
+                <GameOver handleSave={handleSave} stopGame={stopGame} endGame={endGame} />
             );
         }
-        
     }
+
+    //save user data to the server
+    let handleSave = (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('playerName').value;
+        const token = $('meta[name="csrf-token"]').attr('content');
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': token
+            }
+        });
+
+        let infoText = document.getElementById('save-info');
+
+        $.ajax({
+            url: saveUrl,
+            method: 'post',
+            data: { name: name, time: flyTime, stars: stars },
+            success: (res) => {
+                console.log('success', res);
+                infoText.innerText = res.success;
+            },
+            error: (err) => {
+                console.log('error:', err);
+                infoText.innerText = err.responseText;
+            }
+        });
+    }
+
+    let getPlayers = () => {
+        $.ajax({
+            url: getPlayersUrl,
+            method: 'get',
+            success: (res) => {
+                console.log('success', res);
+                res.success.forEach( (player) => {
+                    player.score = player.stars + player.time;
+                } );
+                setPlayers(res.success);
+            },
+            error: (err) => {
+                console.log('error', err);
+            }
+        });
+    }
+
+    //cancel animation
 
     return (
         displayByGameStatus()

@@ -10903,3 +10903,69 @@ a.text-dark:focus {
   }
 }
 
+body {
+  padding-top: 4rem;
+}
+
+.game.container {
+  margin: auto;
+  width: 400px;
+}
+
+.game.container p {
+  margin: auto 0 !important;
+}
+
+.game.container .card {
+  display: flex;
+  flex-direction: row;
+  width: 400px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.5rem;
+  background: floralwhite;
+}
+
+.game.container .card button {
+  margin: 0.2rem;
+}
+
+.card-header {
+  text-align: center;
+}
+
+.rank-field.card {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  background-color: floralwhite;
+}
+
+.rank-field.card p {
+  width: 7rem;
+  margin: 0;
+  padding: 0 1rem;
+}
+
+.start-game .rank-container {
+  overflow: scroll;
+  width: 23rem;
+  background: beige;
+  height: 12rem;
+  padding-top: 0.5rem;
+  margin: 1rem auto 2rem;
+}
+
+.start-game h2 {
+  text-align: center;
+  color: #333;
+}
+
+.start-game button {
+  display: flex;
+  margin: auto;
+}
+

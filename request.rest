@@ -1,0 +1,9 @@
+##save player
+HTTP localhost:8000/save
+Content-Type: application/json
+
+{
+    "name": "cacious",
+    "time": "2",
+    "stars": "3"
+}
