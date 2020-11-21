@@ -56350,10 +56350,6 @@ var Main = function Main() {
   var gameOver = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(false);
   var stopGame = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(false);
   var paused = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(false);
-  var timePaused = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({
-    start: 0,
-    elapsed: 0
-  });
   var animationRef = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(0);
   /**
    * initialize context, variables and images when beginning the game
@@ -56538,9 +56534,8 @@ var Main = function Main() {
     if (imgMeta.current.loadedImages != 5) {
       alert('!failed to load images');
       return;
-    }
+    } //if game is paused, dont animate
 
-    console.log('ref', animationRef); //if game is paused, dont animate
 
     if (!paused.current) {
       //clear canvas to prevent drawing multiple duplicate images
@@ -56560,20 +56555,7 @@ var Main = function Main() {
 
       animateImg('parachute', timestamp); //#STARS
 
-      animateImg('star', timestamp); //reset time paused when the game is played
-
-      timePaused.current.start = 0;
-      timePaused.current.elapsed = 0; //console.log( 'time paused reset', timePaused.current );
-    } else {
-      //if game is paused, keep track of how long it paused,
-      //this is so as not to interfere with the visibility 
-      //of each image (i.e the amount of time an object can be visible)
-      if (Boolean(timePaused.current.start)) {
-        timePaused.current.elapsed = timestamp - timePaused.current.start;
-      } else {
-        timePaused.current.start = timestamp;
-      } //console.log('Time Paused = ',timePaused.current.elapsed);
-
+      animateImg('star', timestamp);
     } //request animation frame if the game is not over yet
 
 
@@ -56628,8 +56610,6 @@ var Main = function Main() {
         handlePause(e);
         break;
     }
-
-    console.log(e.keyCode);
   };
   /**
    * Has a timer that resets every second
@@ -56709,8 +56689,7 @@ var Main = function Main() {
 
     if (detected) {
       deleteImg(name, imgIndex);
-    } //if(detected) console.log('Collision Detected with ' + name);
-
+    }
 
     return {
       status: detected,
@@ -56953,7 +56932,6 @@ var Main = function Main() {
 
     paused.current = !paused.current;
     setPauseText(paused.current ? 'Play' : 'Pause');
-    console.log('game pause clicked', paused.current);
   };
   /**
    * starts the game
@@ -56995,10 +56973,6 @@ var Main = function Main() {
     gameOver.current = false;
     stopGame.current = false;
     paused.current = false;
-    timePaused.current = {
-      start: 0,
-      elapsed: 0
-    };
     animationRef.current = 0;
   };
   /**
@@ -57059,11 +57033,9 @@ var Main = function Main() {
         stars: stars
       },
       success: function success(res) {
-        console.log('success', res);
         infoText.innerText = res.success;
       },
       error: function error(err) {
-        console.log('error:', err);
         infoText.innerText = err.responseText;
       }
     });
@@ -57079,7 +57051,6 @@ var Main = function Main() {
       url: getPlayersUrl,
       method: 'get',
       success: function success(res) {
-        console.log('success', res);
         res.success.forEach(function (player) {
           player.score = player.stars + player.time;
         });
@@ -57114,7 +57085,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /**
  * The screen that starts the game
- * @param {Object} props properties passed from the parrent component
+ * @param {Object} props properties passed from the parent component
  * @return {Object} the component to be displayed
  */
 
@@ -57132,9 +57103,7 @@ var StartGame = function StartGame(props) {
     var rankedPlayers = [];
     arr = props.players.sort(function (a, b) {
       return b.score - a.score;
-    }); //props.setPlayers(arr);
-
-    console.log('sorted player = ', props.players, arr);
+    });
 
     if (arr.length != 0) {
       rankedPlayers = arr.map(function (player, i) {

@@ -3,7 +3,7 @@ import {Container, Card, Button} from 'react-bootstrap';
 
 /**
  * The screen that starts the game
- * @param {Object} props properties passed from the parrent component
+ * @param {Object} props properties passed from the parent component
  * @return {Object} the component to be displayed
  */
 let StartGame = (props) => {
@@ -21,9 +21,6 @@ let StartGame = (props) => {
         arr = props.players.sort((a,b) => {
             return b.score - a.score;
         });
-
-        //props.setPlayers(arr);
-        console.log('sorted player = ', props.players, arr);
 
         if( arr.length != 0 ){
             rankedPlayers = arr.map( (player, i) => {

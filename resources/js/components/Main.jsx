@@ -32,7 +32,6 @@ let Main = () => {
     let gameOver = useRef(false);
     let stopGame = useRef(false);
     let paused = useRef(false);
-    let timePaused = useRef({ start: 0, elapsed: 0 });
     let animationRef = useRef(0);
 
     /**
@@ -203,7 +202,6 @@ let Main = () => {
             alert( '!failed to load images' );
             return;
         }
-        console.log('ref', animationRef);
 
         //if game is paused, dont animate
         if( !paused.current ){
@@ -232,24 +230,6 @@ let Main = () => {
 
             //#STARS
             animateImg('star', timestamp);
-
-            //reset time paused when the game is played
-            timePaused.current.start = 0;
-            timePaused.current.elapsed = 0;
-            //console.log( 'time paused reset', timePaused.current );
-
-        }else{
-            //if game is paused, keep track of how long it paused,
-            //this is so as not to interfere with the visibility 
-            //of each image (i.e the amount of time an object can be visible)
-            if(Boolean(timePaused.current.start)){
-                timePaused.current.elapsed = timestamp - timePaused.current.start;
-            }else{
-                timePaused.current.start = timestamp;
-            }
-
-            //console.log('Time Paused = ',timePaused.current.elapsed);
-            
         }
         //request animation frame if the game is not over yet
         if(!stopGame.current)
@@ -295,7 +275,6 @@ let Main = () => {
                 handlePause(e);
             break;
         }
-        console.log( e.keyCode );
     }
 
     /**
@@ -368,8 +347,6 @@ let Main = () => {
         if(detected){
             deleteImg(name, imgIndex);
         }   
-        
-        //if(detected) console.log('Collision Detected with ' + name);
 
         return { status: detected, img: imgIndex };
     }
@@ -530,7 +507,6 @@ let Main = () => {
         //toggle pause status
         paused.current = !paused.current;
         setPauseText( paused.current ? 'Play' : 'Pause' );
-        console.log('game pause clicked', paused.current);
     }
 
     /**
@@ -570,7 +546,6 @@ let Main = () => {
         gameOver.current = false;
         stopGame.current = false;
         paused.current = false;
-        timePaused.current = { start: 0, elapsed: 0 }
         animationRef.current = 0;
     }
 
@@ -619,11 +594,9 @@ let Main = () => {
             method: 'post',
             data: { name: name, time: flyTime, stars: stars },
             success: (res) => {
-                console.log('success', res);
                 infoText.innerText = res.success;
             },
             error: (err) => {
-                console.log('error:', err);
                 infoText.innerText = err.responseText;
             }
         });
@@ -638,7 +611,6 @@ let Main = () => {
             url: getPlayersUrl,
             method: 'get',
             success: (res) => {
-                console.log('success', res);
                 res.success.forEach( (player) => {
                     player.score = player.stars + player.time;
                 } );
