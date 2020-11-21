@@ -11,6 +11,7 @@ function Main() {
     const [ fuel, setFuel ] = useState(10);
     const [ stars, setStars ] = useState(0);
     const [ flyTime, setFlyTime ] = useState(0);
+    const [ pauseText, setPauseText ] = useState('Pause');
 
 
     let context = useRef({});
@@ -182,6 +183,8 @@ function Main() {
             return;
         }
 
+        console.log('gameOver = ', gameOver.current);
+
         //if game is paused, dont animate
         if( !paused.current ){
             //clear canvas to prevent drawing multiple duplicate images
@@ -213,7 +216,7 @@ function Main() {
             //reset time paused when the game is played
             timePaused.current.start = 0;
             timePaused.current.elapsed = 0;
-            console.log( 'time paused reset', timePaused.current );
+            //console.log( 'time paused reset', timePaused.current );
 
         }else{
             //if game is paused, keep track of how long it paused,
@@ -225,7 +228,7 @@ function Main() {
                 timePaused.current.start = timestamp;
             }
 
-            console.log('Time Paused = ',timePaused.current.elapsed);
+            //console.log('Time Paused = ',timePaused.current.elapsed);
             
         }
         //request animation frame
@@ -279,9 +282,12 @@ function Main() {
         timeMonitor('plane', timestamp, false);
         if( imgMeta.current.plane.time.elapsed >= 1000 ){
             resetTimeMonitor('plane', false);
-            setFuel( prevState => prevState -= 1 );
+            setFuel( prevState => { 
+                //set gameOver to true if fuel is about to be set to 0
+                if(prevState <= 0) gameOver.current = true;
+                return prevState -= 1 
+            } );
             setFlyTime( prevState => prevState += 1 );
-            if(fuel == 0) gameOver = true;
         }
 
         let detected = collisionDetected('parachute');
@@ -478,22 +484,38 @@ function Main() {
 
         //toggle pause status
         paused.current = !paused.current;
-        
+        setPauseText( paused.current ? 'Play' : 'Pause' );
         console.log('game pause clicked', paused.current);
     }
 
     //Initializes the game only once
     useEffect( () => init(), []);
 
-    return (
-        <div className="container">
-            <div style={ { display: 'flex' } }> <p><strong>Fuel:</strong> {fuel}, <strong>Stars:</strong> {stars}, <strong>Fly Time:</strong> {flyTime}</p> 
-                <button id='pause-game' onClick={handlePause}>{paused.current ? 'Play' : 'Pause'}</button>
+    let displayByGameStatus = () => {
+        if(!gameOver){
+            return(
+            <div className="container">
+                <div style={ { display: 'flex' } }> <p><strong>Fuel:</strong> {fuel}, <strong>Stars:</strong> {stars}, <strong>Fly Time:</strong> {flyTime}</p> 
+                    <button id='pause-game' onClick={handlePause}>{pauseText}</button>
+                </div>
+                <canvas width='400px' height='400px' id='canvas' onClick={handlePause} >
+                    Your browser does not support Canvas, please use a more recent browser such as google chrome!
+                </canvas>   
             </div>
-            <canvas width='400px' height='400px' id='canvas' onClick={handlePause} >
-                Your browser does not support Canvas, please use a more recent browser such as google chrome!
-            </canvas>   
-        </div>
+            );
+        }else{
+            return(
+                <div className="container">
+                
+
+                </div>
+            );
+        }
+        
+    }
+
+    return (
+        displayByGameStatus()
     );
 }
 

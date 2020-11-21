@@ -29118,6 +29118,11 @@ function Main() {
       flyTime = _useState16[0],
       setFlyTime = _useState16[1];
 
+  var _useState17 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('Pause'),
+      _useState18 = _slicedToArray(_useState17, 2),
+      pauseText = _useState18[0],
+      setPauseText = _useState18[1];
+
   var context = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
   var canvas = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
   var imgMeta = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
@@ -29301,8 +29306,9 @@ function Main() {
     if (imgMeta.current.loadedImages != 5) {
       alert('!failed to load images');
       return;
-    } //if game is paused, dont animate
+    }
 
+    console.log('gameOver = ', gameOver.current); //if game is paused, dont animate
 
     if (!paused.current) {
       //clear canvas to prevent drawing multiple duplicate images
@@ -29325,8 +29331,7 @@ function Main() {
       animateImg('star', timestamp); //reset time paused when the game is played
 
       timePaused.current.start = 0;
-      timePaused.current.elapsed = 0;
-      console.log('time paused reset', timePaused.current);
+      timePaused.current.elapsed = 0; //console.log( 'time paused reset', timePaused.current );
     } else {
       //if game is paused, keep track of how long it paused,
       //this is so as not to interfere with the visibility 
@@ -29335,9 +29340,8 @@ function Main() {
         timePaused.current.elapsed = timestamp - timePaused.current.start;
       } else {
         timePaused.current.start = timestamp;
-      }
+      } //console.log('Time Paused = ',timePaused.current.elapsed);
 
-      console.log('Time Paused = ', timePaused.current.elapsed);
     } //request animation frame
 
 
@@ -29403,12 +29407,13 @@ function Main() {
     if (imgMeta.current.plane.time.elapsed >= 1000) {
       resetTimeMonitor('plane', false);
       setFuel(function (prevState) {
+        //set gameOver to true if fuel is about to be set to 0
+        if (prevState <= 0) gameOver.current = true;
         return prevState -= 1;
       });
       setFlyTime(function (prevState) {
         return prevState += 1;
       });
-      if (fuel == 0) gameOver = true;
     }
 
     var detected = collisionDetected('parachute');
@@ -29684,6 +29689,7 @@ function Main() {
     e.preventDefault(); //toggle pause status
 
     paused.current = !paused.current;
+    setPauseText(paused.current ? 'Play' : 'Pause');
     console.log('game pause clicked', paused.current);
   }; //Initializes the game only once
 
@@ -29691,21 +29697,32 @@ function Main() {
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
     return init();
   }, []);
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-    className: "container"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-    style: {
-      display: 'flex'
+
+  var displayByGameStatus = function displayByGameStatus() {
+    if (!gameOver) {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "container"
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        style: {
+          display: 'flex'
+        }
+      }, " ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Fuel:"), " ", fuel, ", ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Stars:"), " ", stars, ", ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Fly Time:"), " ", flyTime), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+        id: "pause-game",
+        onClick: handlePause
+      }, pauseText)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("canvas", {
+        width: "400px",
+        height: "400px",
+        id: "canvas",
+        onClick: handlePause
+      }, "Your browser does not support Canvas, please use a more recent browser such as google chrome!"));
+    } else {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "container"
+      });
     }
-  }, " ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Fuel:"), " ", fuel, ", ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Stars:"), " ", stars, ", ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Fly Time:"), " ", flyTime), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-    id: "pause-game",
-    onClick: handlePause
-  }, paused.current ? 'Play' : 'Pause')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("canvas", {
-    width: "400px",
-    height: "400px",
-    id: "canvas",
-    onClick: handlePause
-  }, "Your browser does not support Canvas, please use a more recent browser such as google chrome!"));
+  };
+
+  return displayByGameStatus();
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Main);
@@ -29730,8 +29747,8 @@ function Main() {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\cacious\Documents\Cacious\Sky-Angel\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\cacious\Documents\Cacious\Sky-Angel\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! F:\xampp\htdocs\Sky-Angel\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! F:\xampp\htdocs\Sky-Angel\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
