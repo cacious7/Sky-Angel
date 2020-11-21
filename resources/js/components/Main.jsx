@@ -10,11 +10,25 @@ function Main() {
     const [ cloud, setCloud ] = useState( new Image() );
     const [ fuel, setFuel ] = useState(10);
     const [ stars, setStars ] = useState(0);
+    // const [ flyTime, setFlyTime ] = useState({
+    //     monitoring: false,
+    //     start: null,
+    //     current: null,
+    //     elapsed: 0,
+    //     visibility: 1300
+    // });
 
     let context = useRef({});
     let canvas = useRef({});
     let imgMeta = useRef({});
     let gameOver = useRef(false);
+    let flyTime = useRef( {
+        monitoring: false,
+        start: null,
+        current: null,
+        elapsed: 0,
+        visibility: 1300
+    } );
 
     //initialize context, variables and images upon component initial render
     let init = () => {
@@ -46,6 +60,13 @@ function Main() {
                     elapsed: 0,
                     visibility: 1300
                 }, //counts time in milliseconds
+                flyTime: {
+                    monitoring: false,
+                    start: null,
+                    current: null,
+                    elapsed: 0,
+                    visibility: 1300
+                },
                 maxDrop: 5, // maximum number of images droped at a go //counts time in milliseconds
                 area: { //arrays that take objects of coordinates of each side of an object
                     top: [],
@@ -60,15 +81,15 @@ function Main() {
                     width: 30,
                     height: 30
                 },
-                gravity: 3,
+                gravity: 2.5    ,
                 time: {
                     monitoring: false,
                     start: null,
                     current: null,
                     elapsed: 0,
-                    visibility: 2300
+                    visibility: 4000
                 }, //counts time in milliseconds
-                maxDrop: 12, // maximum number of images droped at a go //counts time in milliseconds
+                maxDrop: 8, // maximum number of images droped at a go //counts time in milliseconds
                 area: { //arrays that take objects of coordinates of each side of an object
                     top: [],
                     bottom: [],
@@ -104,13 +125,13 @@ function Main() {
                     width: 50,
                     height: 50
                 },
-                gravity: 2.5,
+                gravity: 3.5,
                 time: {
                     monitoring: false,
                     start: null,
                     current: null,
                     elapsed: 0,
-                    visibility: 3000
+                    visibility: 1800
                 }, //counts time in milliseconds
                 maxDrop: 2, // maximum number of images droped at a go //counts time in milliseconds
                 area: { //arrays that take objects of coordinates of each side of an object
@@ -160,7 +181,7 @@ function Main() {
         cloud.src = 'images/cloud.png';
 
         //set control key event listener
-        document.onkeyup = controlKeyMonitor;
+        document.onkeydown = controlKeyMonitor;
     }
     
     //draw the game animation
@@ -170,6 +191,10 @@ function Main() {
             alert( '!failed to load images' );
             return;
         }
+
+        //initialize fly time count 
+        console.log(timeMonitor('plane', timestamp, true));
+        //setFlyTime( Math.floor(imgMeta.current.plane.flyTime.elapsed/1000) );
 
         //clear canvas to prevent drawing multiple duplicate images
         context.current.clearRect(0, 0, canvas.current.width, canvas.current.height);
@@ -212,27 +237,28 @@ function Main() {
         const upArrow = 38;
         const rightArrow = 39;
         const downArrow = 40;
+        const speed = 30;
 
         switch(e.keyCode){
             case leftArrow:
                 if(imgMeta.current.plane.imgs[0].x > 10){
-                    imgMeta.current.plane.imgs[0].x--;
+                    imgMeta.current.plane.imgs[0].x -= speed;
                 }
             break;
             case upArrow:
                 if(imgMeta.current.plane.imgs[0].y > 10){
-                    imgMeta.current.plane.imgs[0].x--;
+                    imgMeta.current.plane.imgs[0].y -= speed;
                 }
             break;
             case rightArrow:
-                if(canvas.width - imgMeta.current.plane.imgs[0].x > 10){
-                    imgMeta.current.plane.imgs[0].x++;
+                if(canvas.current.width - imgMeta.current.plane.imgs[0].x > 50){
+                    imgMeta.current.plane.imgs[0].x += speed;
                 }
             break;
             case downArrow:
-                if(canvas.height - imgMeta.current.plane.imgs[0].y > 50){
-                    imgMeta.current.plane.imgs[0].y++;
-        --}
+                if(canvas.current.height - imgMeta.current.plane.imgs[0].y > 50){
+                    imgMeta.current.plane.imgs[0].y += speed;
+                }   
             break;
         }
         console.log( e.keyCode );
@@ -240,9 +266,9 @@ function Main() {
 
     //monitor the fuel
     let fuelMonitor = (timestamp) => {
-        timeMonitor('plane', timestamp);
+        timeMonitor('plane', timestamp, false);
         if( imgMeta.current.plane.time.elapsed >= 1000 ){
-            resetTimeMonitor('plane');
+            resetTimeMonitor('plane', false);
             setFuel( prevState => prevState -= 1 );
             if(fuel == 0) gameOver = true;
         }
@@ -305,9 +331,9 @@ function Main() {
 
     let animateImg = (name, timestamp) => {
         //load image at random x positions after a delay
-        timeMonitor(name, timestamp);
+        timeMonitor(name, timestamp, false);
         if(imgMeta.current[name].time.elapsed > imgMeta.current[name].time.visibility){
-            resetTimeMonitor(name);
+            resetTimeMonitor(name, false);
             randomX(name, Math.random() * imgMeta.current[name].maxDrop);
         }
 
@@ -335,12 +361,12 @@ function Main() {
      * Stops time monitoring for a specific image
      * @param {String} name name of the image to stop time monitoring
      */
-    let resetTimeMonitor = (name) => {
-        imgMeta.current[name].time.monitor = false;
-        imgMeta.current[name].time.start = null;
-        imgMeta.current[name].time.current = null;
-        imgMeta.current[name].time.elapsed = 0;
-
+    let resetTimeMonitor = (name, flyTime) => {
+        let time = flyTime ? 'flyTime' : 'time';
+        imgMeta.current[name][time].monitor = false;
+        imgMeta.current[name][time].start = null;
+        imgMeta.current[name][time].current = null;
+        imgMeta.current[name][time].elapsed = 0;
     }
 
     /**
@@ -349,20 +375,34 @@ function Main() {
      * @param {Number} timestamp timestamp gotten from requestAnimationFrame
      * @return {Number} the time elapsed
      */
-    let timeMonitor = ( name, timestamp ) => {
+    let timeMonitor = ( name, timestamp,isFlyTime ) => {
         const startTime = imgMeta.current[name].time.start;
         const monitoring = imgMeta.current[name].time.monitoring;
+        const timeKey = isFlyTime ? 'flyTime' : 'time';
         //if start time has been set / time monitoring has began
         //return time difference
         //else return 0
         if(Boolean(startTime) && Boolean(monitoring)){
-            imgMeta.current[name].time.current = timestamp;
-            imgMeta.current[name].time.elapsed = imgMeta.current[name].time.current - startTime;
-            return imgMeta.current[name].time.elapsed;
+            if(isFlyTime){
+                flyTime.current.current = timestamp;
+                flyTime.current.elapsed = flyTime.current.current - flyTime.current.startTime;
+                return flyTime.current.elapsed;
+            }else {
+                imgMeta.current[name][timeKey].current = timestamp;
+                imgMeta.current[name][timeKey].elapsed = imgMeta.current[name][timeKey].current - startTime;
+                return imgMeta.current[name][timeKey].elapsed;
+            } 
         }else{
-            imgMeta.current[name].time.monitoring = true;
-            imgMeta.current[name].time.start = timestamp;
-            return imgMeta.current[name].time.elapsed;
+            if(isFlyTime){
+                flyTime.current.monitoring = true;
+                flyTime.current.start = timestamp;
+                return flyTime.current.elapsed;
+            }else{
+                imgMeta.current[name][timeKey].monitoring = true;
+                imgMeta.current[name][timeKey].start = timestamp;
+                return imgMeta.current[name][timeKey].elapsed;
+            }
+            
         }
 
     }
@@ -434,10 +474,10 @@ function Main() {
 
     return (
         <div className="container">
-            <div style={ { display: 'flex' } }> <p><strong>Fuel:</strong> {fuel}, <strong>Stars:</strong> {stars}</p> </div>
+            <div style={ { display: 'flex' } }> <p><strong>Fuel:</strong> {fuel}, <strong>Stars:</strong> {stars}, <strong>Time Elapsed:</strong> {flyTime.current.elapsed}</p> </div>
             <canvas width='400px' height='400px' id='canvas'>
                 Your browser does not support Canvas, please use a more recent browser such as google chrome!
-            </canvas>
+            </canvas>   
         </div>
     );
 }
