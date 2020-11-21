@@ -29111,25 +29111,21 @@ function Main() {
   var _useState13 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0),
       _useState14 = _slicedToArray(_useState13, 2),
       stars = _useState14[0],
-      setStars = _useState14[1]; // const [ flyTime, setFlyTime ] = useState({
-  //     monitoring: false,
-  //     start: null,
-  //     current: null,
-  //     elapsed: 0,
-  //     visibility: 1300
-  // });
+      setStars = _useState14[1];
 
+  var _useState15 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0),
+      _useState16 = _slicedToArray(_useState15, 2),
+      flyTime = _useState16[0],
+      setFlyTime = _useState16[1];
 
   var context = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
   var canvas = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
   var imgMeta = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({});
   var gameOver = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(false);
-  var flyTime = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({
-    monitoring: false,
-    start: null,
-    current: null,
-    elapsed: 0,
-    visibility: 1300
+  var paused = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(false);
+  var timePaused = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])({
+    start: 0,
+    elapsed: 0
   }); //initialize context, variables and images upon component initial render
 
   var init = function init() {
@@ -29305,34 +29301,48 @@ function Main() {
     if (imgMeta.current.loadedImages != 5) {
       alert('!failed to load images');
       return;
-    } //initialize fly time count 
+    } //if game is paused, dont animate
 
 
-    console.log(timeMonitor('plane', timestamp, true)); //setFlyTime( Math.floor(imgMeta.current.plane.flyTime.elapsed/1000) );
-    //clear canvas to prevent drawing multiple duplicate images
+    if (!paused.current) {
+      //clear canvas to prevent drawing multiple duplicate images
+      context.current.clearRect(0, 0, canvas.current.width, canvas.current.height); //set background color
 
-    context.current.clearRect(0, 0, canvas.current.width, canvas.current.height); //set background color
+      context.current.fillStyle = '#74b9ff';
+      context.current.fillRect(0, 0, canvas.current.width, canvas.current.height); //#PLANE
+      //load plane
 
-    context.current.fillStyle = '#74b9ff';
-    context.current.fillRect(0, 0, canvas.current.width, canvas.current.height); //let collionDetected = collisionDetected('bird', bird);
-    //#PLANE
-    //load plane
+      drawImages('plane'); //fuel monitoring
 
-    drawImages('plane'); //fuel monitoring
+      fuelMonitor(timestamp); //#CLOUDS
 
-    fuelMonitor(timestamp); //#CLOUDS
+      animateImg('cloud', timestamp); //#BIRDS
 
-    animateImg('cloud', timestamp); //#BIRDS
+      animateImg('bird', timestamp); //#PARACHUTES
 
-    animateImg('bird', timestamp); //#PARACHUTES
+      animateImg('parachute', timestamp); //#STARS
 
-    animateImg('parachute', timestamp); //#STARS
+      animateImg('star', timestamp); //reset time paused when the game is played
 
-    animateImg('star', timestamp); //collionDetected = collisionDetected('bird', bird);
-    //get animation fram
+      timePaused.current.start = 0;
+      timePaused.current.elapsed = 0;
+      console.log('time paused reset', timePaused.current);
+    } else {
+      //if game is paused, keep track of how long it paused,
+      //this is so as not to interfere with the visibility 
+      //of each image (i.e the amount of time an object can be visible)
+      if (Boolean(timePaused.current.start)) {
+        timePaused.current.elapsed = timestamp - timePaused.current.start;
+      } else {
+        timePaused.current.start = timestamp;
+      }
+
+      console.log('Time Paused = ', timePaused.current.elapsed);
+    } //request animation frame
+
 
     requestAnimationFrame(draw);
-  }; //control keys mmonitor
+  }; //control keys monitor
 
 
   var controlKeyMonitor = function controlKeyMonitor(e) {
@@ -29342,24 +29352,25 @@ function Main() {
     var rightArrow = 39;
     var downArrow = 40;
     var speed = 30;
+    var spacebar = 32;
 
     switch (e.keyCode) {
       case leftArrow:
-        if (imgMeta.current.plane.imgs[0].x > 10) {
+        if (imgMeta.current.plane.imgs[0].x > 15) {
           imgMeta.current.plane.imgs[0].x -= speed;
         }
 
         break;
 
       case upArrow:
-        if (imgMeta.current.plane.imgs[0].y > 10) {
+        if (imgMeta.current.plane.imgs[0].y > 20) {
           imgMeta.current.plane.imgs[0].y -= speed;
         }
 
         break;
 
       case rightArrow:
-        if (canvas.current.width - imgMeta.current.plane.imgs[0].x > 50) {
+        if (canvas.current.width - imgMeta.current.plane.imgs[0].x > 80) {
           imgMeta.current.plane.imgs[0].x += speed;
         }
 
@@ -29371,10 +29382,19 @@ function Main() {
         }
 
         break;
+
+      case spacebar:
+        handlePause(e);
+        break;
     }
 
     console.log(e.keyCode);
-  }; //monitor the fuel
+  };
+  /**
+   * Has a timer that resets every second
+   * Which is used to monitor fuel and fly time
+   * @param {Number} timestamp the time in milliseconds  
+   */
 
 
   var fuelMonitor = function fuelMonitor(timestamp) {
@@ -29384,6 +29404,9 @@ function Main() {
       resetTimeMonitor('plane', false);
       setFuel(function (prevState) {
         return prevState -= 1;
+      });
+      setFlyTime(function (prevState) {
+        return prevState += 1;
       });
       if (fuel == 0) gameOver = true;
     }
@@ -29408,6 +29431,11 @@ function Main() {
       imgMeta.current.loadedImages += 1;
     }
   };
+  /**
+   * Detect collision of the plane with another image type
+   * @param {String} name nae of type of image to detect collision with 
+   */
+
 
   var collisionDetected = function collisionDetected(name) {
     var planeMeta = imgMeta.current.plane;
@@ -29446,7 +29474,7 @@ function Main() {
 
   var animateImg = function animateImg(name, timestamp) {
     //load image at random x positions after a delay
-    timeMonitor(name, timestamp, false);
+    timeMonitor(name, timestamp);
 
     if (imgMeta.current[name].time.elapsed > imgMeta.current[name].time.visibility) {
       resetTimeMonitor(name, false);
@@ -29475,17 +29503,16 @@ function Main() {
     dropImages(name);
   };
   /**
-   * Stops time monitoring for a specific image
+   * resets time monitoring for a specific image type
    * @param {String} name name of the image to stop time monitoring
    */
 
 
-  var resetTimeMonitor = function resetTimeMonitor(name, flyTime) {
-    var time = flyTime ? 'flyTime' : 'time';
-    imgMeta.current[name][time].monitor = false;
-    imgMeta.current[name][time].start = null;
-    imgMeta.current[name][time].current = null;
-    imgMeta.current[name][time].elapsed = 0;
+  var resetTimeMonitor = function resetTimeMonitor(name) {
+    imgMeta.current[name].time.monitor = false;
+    imgMeta.current[name].time.start = null;
+    imgMeta.current[name].time.current = null;
+    imgMeta.current[name].time.elapsed = 0;
   };
   /**
    * Monitors and counts time elapsed
@@ -29495,33 +29522,20 @@ function Main() {
    */
 
 
-  var timeMonitor = function timeMonitor(name, timestamp, isFlyTime) {
+  var timeMonitor = function timeMonitor(name, timestamp) {
     var startTime = imgMeta.current[name].time.start;
-    var monitoring = imgMeta.current[name].time.monitoring;
-    var timeKey = isFlyTime ? 'flyTime' : 'time'; //if start time has been set / time monitoring has began
+    var monitoring = imgMeta.current[name].time.monitoring; //if start time has been set (time monitoring has began)
     //return time difference
     //else return 0
 
     if (Boolean(startTime) && Boolean(monitoring)) {
-      if (isFlyTime) {
-        flyTime.current.current = timestamp;
-        flyTime.current.elapsed = flyTime.current.current - flyTime.current.startTime;
-        return flyTime.current.elapsed;
-      } else {
-        imgMeta.current[name][timeKey].current = timestamp;
-        imgMeta.current[name][timeKey].elapsed = imgMeta.current[name][timeKey].current - startTime;
-        return imgMeta.current[name][timeKey].elapsed;
-      }
+      imgMeta.current[name].time.current = timestamp;
+      imgMeta.current[name].time.elapsed = imgMeta.current[name].time.current - startTime;
+      return imgMeta.current[name].time.elapsed;
     } else {
-      if (isFlyTime) {
-        flyTime.current.monitoring = true;
-        flyTime.current.start = timestamp;
-        return flyTime.current.elapsed;
-      } else {
-        imgMeta.current[name][timeKey].monitoring = true;
-        imgMeta.current[name][timeKey].start = timestamp;
-        return imgMeta.current[name][timeKey].elapsed;
-      }
+      imgMeta.current[name].time.monitoring = true;
+      imgMeta.current[name].time.start = timestamp;
+      return imgMeta.current[name].time.elapsed;
     }
   };
   /**
@@ -29660,6 +29674,19 @@ function Main() {
       return img.y += imgMeta.current[name].gravity;
     });
   };
+  /**
+   * Toggle between game pause and play state
+   * @param {Event} e the event that has been triggered
+   */
+
+
+  var handlePause = function handlePause(e) {
+    e.preventDefault(); //toggle pause status
+
+    paused.current = !paused.current;
+    console.log('game pause clicked', paused.current);
+  }; //Initializes the game only once
+
 
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
     return init();
@@ -29670,10 +29697,14 @@ function Main() {
     style: {
       display: 'flex'
     }
-  }, " ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Fuel:"), " ", fuel, ", ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Stars:"), " ", stars, ", ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Time Elapsed:"), " ", flyTime.current.elapsed), " "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("canvas", {
+  }, " ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Fuel:"), " ", fuel, ", ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Stars:"), " ", stars, ", ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Fly Time:"), " ", flyTime), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    id: "pause-game",
+    onClick: handlePause
+  }, paused.current ? 'Play' : 'Pause')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("canvas", {
     width: "400px",
     height: "400px",
-    id: "canvas"
+    id: "canvas",
+    onClick: handlePause
   }, "Your browser does not support Canvas, please use a more recent browser such as google chrome!"));
 }
 

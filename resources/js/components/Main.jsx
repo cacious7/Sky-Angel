@@ -10,25 +10,15 @@ function Main() {
     const [ cloud, setCloud ] = useState( new Image() );
     const [ fuel, setFuel ] = useState(10);
     const [ stars, setStars ] = useState(0);
-    // const [ flyTime, setFlyTime ] = useState({
-    //     monitoring: false,
-    //     start: null,
-    //     current: null,
-    //     elapsed: 0,
-    //     visibility: 1300
-    // });
+    const [ flyTime, setFlyTime ] = useState(0);
+
 
     let context = useRef({});
     let canvas = useRef({});
     let imgMeta = useRef({});
     let gameOver = useRef(false);
-    let flyTime = useRef( {
-        monitoring: false,
-        start: null,
-        current: null,
-        elapsed: 0,
-        visibility: 1300
-    } );
+    let paused = useRef(false);
+    let timePaused = useRef({ start: 0, elapsed: 0 });
 
     //initialize context, variables and images upon component initial render
     let init = () => {
@@ -192,45 +182,57 @@ function Main() {
             return;
         }
 
-        //initialize fly time count 
-        console.log(timeMonitor('plane', timestamp, true));
-        //setFlyTime( Math.floor(imgMeta.current.plane.flyTime.elapsed/1000) );
+        //if game is paused, dont animate
+        if( !paused.current ){
+            //clear canvas to prevent drawing multiple duplicate images
+            context.current.clearRect(0, 0, canvas.current.width, canvas.current.height);
 
-        //clear canvas to prevent drawing multiple duplicate images
-        context.current.clearRect(0, 0, canvas.current.width, canvas.current.height);
+            //set background color
+            context.current.fillStyle = '#74b9ff';
+            context.current.fillRect(0, 0, canvas.current.width, canvas.current.height);
 
-        //set background color
-        context.current.fillStyle = '#74b9ff';
-        context.current.fillRect(0, 0, canvas.current.width, canvas.current.height);
+            //#PLANE
+            //load plane
+            drawImages('plane');
+            
+            //fuel monitoring
+            fuelMonitor(timestamp);
 
-        //let collionDetected = collisionDetected('bird', bird);
+            //#CLOUDS
+            animateImg('cloud', timestamp);
 
-        //#PLANE
-        //load plane
-        drawImages('plane');
-        
-        //fuel monitoring
-        fuelMonitor(timestamp);
+            //#BIRDS
+            animateImg('bird', timestamp);
 
-        //#CLOUDS
-        animateImg('cloud', timestamp);
+            //#PARACHUTES
+            animateImg('parachute', timestamp);
 
-        //#BIRDS
-        animateImg('bird', timestamp);
+            //#STARS
+            animateImg('star', timestamp);
 
-        //#PARACHUTES
-        animateImg('parachute', timestamp);
+            //reset time paused when the game is played
+            timePaused.current.start = 0;
+            timePaused.current.elapsed = 0;
+            console.log( 'time paused reset', timePaused.current );
 
-        //#STARS
-        animateImg('star', timestamp);
+        }else{
+            //if game is paused, keep track of how long it paused,
+            //this is so as not to interfere with the visibility 
+            //of each image (i.e the amount of time an object can be visible)
+            if(Boolean(timePaused.current.start)){
+                timePaused.current.elapsed = timestamp - timePaused.current.start;
+            }else{
+                timePaused.current.start = timestamp;
+            }
 
-        //collionDetected = collisionDetected('bird', bird);
-
-        //get animation fram
+            console.log('Time Paused = ',timePaused.current.elapsed);
+            
+        }
+        //request animation frame
         requestAnimationFrame(draw);
     }
 
-    //control keys mmonitor
+    //control keys monitor
     let controlKeyMonitor = (e) => {
         e.preventDefault();
         const leftArrow = 37;
@@ -238,20 +240,21 @@ function Main() {
         const rightArrow = 39;
         const downArrow = 40;
         const speed = 30;
+        const spacebar = 32;
 
         switch(e.keyCode){
             case leftArrow:
-                if(imgMeta.current.plane.imgs[0].x > 10){
+                if(imgMeta.current.plane.imgs[0].x > 15){
                     imgMeta.current.plane.imgs[0].x -= speed;
                 }
             break;
             case upArrow:
-                if(imgMeta.current.plane.imgs[0].y > 10){
+                if(imgMeta.current.plane.imgs[0].y > 20){
                     imgMeta.current.plane.imgs[0].y -= speed;
                 }
             break;
             case rightArrow:
-                if(canvas.current.width - imgMeta.current.plane.imgs[0].x > 50){
+                if(canvas.current.width - imgMeta.current.plane.imgs[0].x > 80){
                     imgMeta.current.plane.imgs[0].x += speed;
                 }
             break;
@@ -260,16 +263,24 @@ function Main() {
                     imgMeta.current.plane.imgs[0].y += speed;
                 }   
             break;
+            case spacebar:
+                handlePause(e);
+            break;
         }
         console.log( e.keyCode );
     }
 
-    //monitor the fuel
+    /**
+     * Has a timer that resets every second
+     * Which is used to monitor fuel and fly time
+     * @param {Number} timestamp the time in milliseconds  
+     */
     let fuelMonitor = (timestamp) => {
         timeMonitor('plane', timestamp, false);
         if( imgMeta.current.plane.time.elapsed >= 1000 ){
             resetTimeMonitor('plane', false);
             setFuel( prevState => prevState -= 1 );
+            setFlyTime( prevState => prevState += 1 );
             if(fuel == 0) gameOver = true;
         }
 
@@ -291,6 +302,10 @@ function Main() {
         }
     };
 
+    /**
+     * Detect collision of the plane with another image type
+     * @param {String} name nae of type of image to detect collision with 
+     */
     let collisionDetected = (name) => {
         let planeMeta = imgMeta.current.plane;
         let imgCoords = imgMeta.current[name].imgs;
@@ -331,7 +346,7 @@ function Main() {
 
     let animateImg = (name, timestamp) => {
         //load image at random x positions after a delay
-        timeMonitor(name, timestamp, false);
+        timeMonitor(name, timestamp);
         if(imgMeta.current[name].time.elapsed > imgMeta.current[name].time.visibility){
             resetTimeMonitor(name, false);
             randomX(name, Math.random() * imgMeta.current[name].maxDrop);
@@ -358,15 +373,14 @@ function Main() {
     };
 
     /**
-     * Stops time monitoring for a specific image
+     * resets time monitoring for a specific image type
      * @param {String} name name of the image to stop time monitoring
      */
-    let resetTimeMonitor = (name, flyTime) => {
-        let time = flyTime ? 'flyTime' : 'time';
-        imgMeta.current[name][time].monitor = false;
-        imgMeta.current[name][time].start = null;
-        imgMeta.current[name][time].current = null;
-        imgMeta.current[name][time].elapsed = 0;
+    let resetTimeMonitor = (name) => {
+        imgMeta.current[name].time.monitor = false;
+        imgMeta.current[name].time.start = null;
+        imgMeta.current[name].time.current = null;
+        imgMeta.current[name].time.elapsed = 0;
     }
 
     /**
@@ -375,38 +389,23 @@ function Main() {
      * @param {Number} timestamp timestamp gotten from requestAnimationFrame
      * @return {Number} the time elapsed
      */
-    let timeMonitor = ( name, timestamp,isFlyTime ) => {
+    let timeMonitor = ( name, timestamp) => {
         const startTime = imgMeta.current[name].time.start;
         const monitoring = imgMeta.current[name].time.monitoring;
-        const timeKey = isFlyTime ? 'flyTime' : 'time';
-        //if start time has been set / time monitoring has began
+        //if start time has been set (time monitoring has began)
         //return time difference
         //else return 0
         if(Boolean(startTime) && Boolean(monitoring)){
-            if(isFlyTime){
-                flyTime.current.current = timestamp;
-                flyTime.current.elapsed = flyTime.current.current - flyTime.current.startTime;
-                return flyTime.current.elapsed;
-            }else {
-                imgMeta.current[name][timeKey].current = timestamp;
-                imgMeta.current[name][timeKey].elapsed = imgMeta.current[name][timeKey].current - startTime;
-                return imgMeta.current[name][timeKey].elapsed;
-            } 
+                imgMeta.current[name].time.current = timestamp;
+                imgMeta.current[name].time.elapsed = imgMeta.current[name].time.current - startTime;
+                return imgMeta.current[name].time.elapsed;
         }else{
-            if(isFlyTime){
-                flyTime.current.monitoring = true;
-                flyTime.current.start = timestamp;
-                return flyTime.current.elapsed;
-            }else{
-                imgMeta.current[name][timeKey].monitoring = true;
-                imgMeta.current[name][timeKey].start = timestamp;
-                return imgMeta.current[name][timeKey].elapsed;
-            }
-            
+                imgMeta.current[name].time.monitoring = true;
+                imgMeta.current[name].time.start = timestamp;
+                return imgMeta.current[name].time.elapsed;
         }
 
     }
-
 
     /**
      * Draws images on the canvas
@@ -470,12 +469,28 @@ function Main() {
         imgMeta.current[name].imgs.forEach( img => img.y += imgMeta.current[name].gravity );
     }
 
+    /**
+     * Toggle between game pause and play state
+     * @param {Event} e the event that has been triggered
+     */
+    let handlePause = (e) => {
+        e.preventDefault();
+
+        //toggle pause status
+        paused.current = !paused.current;
+        
+        console.log('game pause clicked', paused.current);
+    }
+
+    //Initializes the game only once
     useEffect( () => init(), []);
 
     return (
         <div className="container">
-            <div style={ { display: 'flex' } }> <p><strong>Fuel:</strong> {fuel}, <strong>Stars:</strong> {stars}, <strong>Time Elapsed:</strong> {flyTime.current.elapsed}</p> </div>
-            <canvas width='400px' height='400px' id='canvas'>
+            <div style={ { display: 'flex' } }> <p><strong>Fuel:</strong> {fuel}, <strong>Stars:</strong> {stars}, <strong>Fly Time:</strong> {flyTime}</p> 
+                <button id='pause-game' onClick={handlePause}>{paused.current ? 'Play' : 'Pause'}</button>
+            </div>
+            <canvas width='400px' height='400px' id='canvas' onClick={handlePause} >
                 Your browser does not support Canvas, please use a more recent browser such as google chrome!
             </canvas>   
         </div>
