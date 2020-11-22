@@ -56182,8 +56182,7 @@ var Game = function Game(props) {
   }, props.pauseText)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("canvas", {
     width: "400px",
     height: "400px",
-    id: "canvas",
-    onClick: props.handlePause
+    id: "canvas"
   }, "Your browser does not support Canvas, please use a more recent browser such as google chrome!"));
 };
 
@@ -56311,7 +56310,7 @@ var Main = function Main() {
       cloud = _useState10[0],
       setCloud = _useState10[1];
 
-  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(10),
+  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(20),
       _useState12 = _slicedToArray(_useState11, 2),
       fuel = _useState12[0],
       setFuel = _useState12[1];
@@ -56961,7 +56960,7 @@ var Main = function Main() {
 
 
   var resetGameData = function resetGameData() {
-    setFuel(10);
+    setFuel(20);
     setStars(0);
     setFlyTime(0);
     setPauseText('pause');
@@ -57057,7 +57056,8 @@ var Main = function Main() {
         setPlayers(res.success);
       },
       error: function error(err) {
-        console.log('error', err);
+        var databaseDisconnected = /SQLSTATE\[HY000\] \[2002\] no connection/i.test(err.responseJSON.message);
+        databaseDisconnected ? alert('ALERT: There is no connection to the database, please contact the admin.') : console.log('error', err);
       }
     });
   };
@@ -57104,15 +57104,22 @@ var StartGame = function StartGame(props) {
     arr = props.players.sort(function (a, b) {
       return b.score - a.score;
     });
+    var current = {
+      rank: 1,
+      score: 0
+    };
 
     if (arr.length != 0) {
       rankedPlayers = arr.map(function (player, i) {
+        //current rank should only change if the next score is < than the current
+        if (player.score < current.score) current.rank += 1;
+        current.score = player.score;
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Card"], {
           className: "rank-field",
-          key: i++
+          key: i
         }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", {
           className: "num"
-        }, i++), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", {
+        }, current.rank), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", {
           className: "name"
         }, player.name), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", {
           className: "score"
@@ -57130,7 +57137,7 @@ var StartGame = function StartGame(props) {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Name")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", {
       className: "score"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("strong", null, "Score"))));
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, rankedPlayers, ";");
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, rankedPlayers);
   };
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Container"], {

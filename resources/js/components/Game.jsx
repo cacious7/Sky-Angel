@@ -15,7 +15,7 @@ let Game = (props) => {
             <Card style={ { display: 'flex' } }> <p><strong>Fuel:</strong> {props.fuel}, <strong>Stars:</strong> {props.stars}, <strong>Fly Time:</strong> {props.flyTime}</p> 
                 <Button style={ {display: 'flex'} } id='pause-game' onClick={props.handlePause}>{props.pauseText}</Button>
             </Card>
-            <canvas width='400px' height='400px' id='canvas' onClick={props.handlePause} >
+            <canvas width='400px' height='400px' id='canvas' >
                 Your browser does not support Canvas, please use a more recent browser such as google chrome!
             </canvas>   
         </Container>

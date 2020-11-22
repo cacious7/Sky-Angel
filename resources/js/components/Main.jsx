@@ -16,7 +16,7 @@ let Main = () => {
     const [ bird, setBird ] = useState( new Image() );
     const [ parachute, setParachute ] = useState( new Image() );
     const [ cloud, setCloud ] = useState( new Image() );
-    const [ fuel, setFuel ] = useState(10);
+    const [ fuel, setFuel ] = useState(20);
     const [ stars, setStars ] = useState(0);
     const [ flyTime, setFlyTime ] = useState(0);
     const [ pauseText, setPauseText ] = useState('Pause');
@@ -533,7 +533,7 @@ let Main = () => {
      * @return {void}
      */
     let resetGameData = () => {
-        setFuel(10);
+        setFuel(20);
         setStars(0);
         setFlyTime(0);
         setPauseText('pause');
@@ -617,7 +617,9 @@ let Main = () => {
                 setPlayers(res.success);
             },
             error: (err) => {
-                console.log('error', err);
+                let databaseDisconnected = /SQLSTATE\[HY000\] \[2002\] no connection/i.test(err.responseJSON.message);
+                databaseDisconnected ? alert('ALERT: There is no connection to the database, please contact the admin.')
+                : console.log('error', err);
             }
         });
     }

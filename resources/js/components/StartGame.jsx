@@ -22,11 +22,16 @@ let StartGame = (props) => {
             return b.score - a.score;
         });
 
+        let current = { rank: 1, score: 0  }
+
         if( arr.length != 0 ){
             rankedPlayers = arr.map( (player, i) => {
+                //current rank should only change if the next score is < than the current
+                if( player.score < current.score ) current.rank += 1;
+                current.score = player.score;
                 return (
-                    <Card className='rank-field' key={i++} >
-                        <p className='num'>{i++}</p>
+                    <Card className='rank-field' key={i} >
+                        <p className='num'>{current.rank}</p>
                         <p className='name'>{player.name}</p>
                         <p className='score'>{player.score}</p>
                     </Card>
@@ -45,7 +50,7 @@ let StartGame = (props) => {
 
         return (
             <>
-                {rankedPlayers};
+                {rankedPlayers}
             </>
         );
     }
