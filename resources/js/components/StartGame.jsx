@@ -60,7 +60,7 @@ let StartGame = (props) => {
             <Card>
                 <Card.Header><h1>Sky Angel</h1></Card.Header>
                 <Card.Body>
-                        <h2>Player Ranking</h2>
+                        <h2>Leaderboard</h2>
                         <div className='rank-container' >
                             {rankPlayers()}
                         </div>

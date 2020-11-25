@@ -41,6 +41,11 @@ body{
     text-align: center;
 }
 
+h2{
+    text-align: center;
+    color: #333;
+}
+
 //ranking
 .rank-field.card {
     width: fit-content;
@@ -57,7 +62,7 @@ body{
 
 }
 
-//front or first screen
+//front of first screen
 .start-game{
     .rank-container{
         overflow: scroll;
@@ -66,11 +71,6 @@ body{
         max-height: 12rem;
         padding-top: .5rem;
         margin: 1rem auto 2rem;
-    }
-
-    h2{
-        text-align: center;
-        color: #333;
     }
 
     button{

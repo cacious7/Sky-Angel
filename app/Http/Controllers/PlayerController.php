@@ -37,9 +37,9 @@ class PlayerController extends Controller
             $player->stars = $request->stars;
             $player->save();
 
-            return response()->json(['success' => 'Player data has been saved.']);
+            return response()->json(['message' => 'Saved successfully.']);
         }else{
-            return response()->json(['error' => 'Failed to save player data. Make sure the name input is filled and try refreshing your browser']);
+            return response()->json(['message' => 'Name cannot be empty. Failed to save.'], 400);
         }
 
         

@@ -16,7 +16,7 @@ let Main = () => {
     const [ bird, setBird ] = useState( new Image() );
     const [ parachute, setParachute ] = useState( new Image() );
     const [ cloud, setCloud ] = useState( new Image() );
-    const [ fuel, setFuel ] = useState(20);
+    const [ fuel, setFuel ] = useState(50);
     const [ stars, setStars ] = useState(0);
     const [ flyTime, setFlyTime ] = useState(0);
     const [ pauseText, setPauseText ] = useState('Pause');
@@ -96,7 +96,7 @@ let Main = () => {
                     elapsed: 0,
                     visibility: 4000
                 }, //counts time in milliseconds
-                maxDrop: 7, // maximum number of images droped at a go //counts time in milliseconds
+                maxDrop: 5, // maximum number of images droped at a go //counts time in milliseconds
                 area: { //arrays that take objects of coordinates of each side of an object
                     top: [],
                     bottom: [],
@@ -298,7 +298,7 @@ let Main = () => {
 
         let detected = collisionDetected('parachute');
         if(detected.status){
-            setFuel( prevState => prevState += 1);
+            setFuel( prevState => prevState += 2);
         }
     }
 
@@ -599,7 +599,7 @@ let Main = () => {
      * @return {void}
      */
     let resetGameData = () => {
-        setFuel(20);
+        setFuel(50);
         setStars(0);
         setFlyTime(0);
         setPauseText('pause');
@@ -627,7 +627,7 @@ let Main = () => {
             );
         }else if(!gameOver.current && gameStarted){
             return(
-            <Game init={init} fuel={fuel} stars={stars} flyTime={flyTime} handlePause={handlePause} pauseText={pauseText}/>
+                <Game init={init} fuel={fuel} stars={stars} flyTime={flyTime} handlePause={handlePause} pauseText={pauseText}/>
             );
         }else if(gameOver.current){
             return(
@@ -660,10 +660,11 @@ let Main = () => {
             method: 'post',
             data: { name: name, time: flyTime, stars: stars },
             success: (res) => {
-                infoText.innerText = res.success;
+                infoText.innerText = res.message;
             },
             error: (err) => {
-                infoText.innerText = err.responseText;
+                console.log(err);
+                infoText.innerText = err.responseJSON.message;
             }
         });
     }

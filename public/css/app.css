@@ -10934,6 +10934,11 @@ body {
   text-align: center;
 }
 
+h2 {
+  text-align: center;
+  color: #333;
+}
+
 .rank-field.card {
   width: -webkit-fit-content;
   width: -moz-fit-content;
@@ -10957,11 +10962,6 @@ body {
   max-height: 12rem;
   padding-top: 0.5rem;
   margin: 1rem auto 2rem;
-}
-
-.start-game h2 {
-  text-align: center;
-  color: #333;
 }
 
 .start-game button {

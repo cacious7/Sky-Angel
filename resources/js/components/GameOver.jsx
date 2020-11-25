@@ -14,6 +14,7 @@ let GameOver = (props) => {
             <Card>
                 <Card.Header><h1>Game Over</h1></Card.Header>
                 <Card.Body>
+                    <h2>save your score</h2>
                     <Form onSubmit={props.handleSave}>
                         <Form.Group controlId="playerName">
                             <Form.Label>Name</Form.Label>
