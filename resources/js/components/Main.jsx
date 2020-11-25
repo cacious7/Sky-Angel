@@ -16,7 +16,7 @@ let Main = () => {
     const [ bird, setBird ] = useState( new Image() );
     const [ parachute, setParachute ] = useState( new Image() );
     const [ cloud, setCloud ] = useState( new Image() );
-    const [ fuel, setFuel ] = useState(50);
+    const [ fuel, setFuel ] = useState(10);
     const [ stars, setStars ] = useState(0);
     const [ flyTime, setFlyTime ] = useState(0);
     const [ pauseText, setPauseText ] = useState('Pause');
@@ -298,7 +298,7 @@ let Main = () => {
 
         let detected = collisionDetected('parachute');
         if(detected.status){
-            setFuel( prevState => prevState += 2);
+            setFuel( prevState => prevState += 1);
         }
     }
 
@@ -599,7 +599,7 @@ let Main = () => {
      * @return {void}
      */
     let resetGameData = () => {
-        setFuel(50);
+        setFuel(10);
         setStars(0);
         setFlyTime(0);
         setPauseText('pause');
