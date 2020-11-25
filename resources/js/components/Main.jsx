@@ -663,7 +663,6 @@ let Main = () => {
                 infoText.innerText = res.message;
             },
             error: (err) => {
-                console.log(err);
                 infoText.innerText = err.responseJSON.message;
             }
         });
