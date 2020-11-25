@@ -56416,7 +56416,7 @@ var Main = function Main() {
           visibility: 4000
         },
         //counts time in milliseconds
-        maxDrop: 8,
+        maxDrop: 7,
         // maximum number of images droped at a go //counts time in milliseconds
         area: {
           //arrays that take objects of coordinates of each side of an object
@@ -56666,24 +56666,56 @@ var Main = function Main() {
 
 
   var collisionDetected = function collisionDetected(name) {
-    var planeMeta = imgMeta.current.plane;
-    var imgCoords = imgMeta.current[name].imgs;
-    if (imgCoords.length == 0) return {
+    //COLLISION IS DETECTED:
+    //When any of the four corners of an image is found inside the area of the plane.
+    //Given the coordinates of one corner, x and y, there is collision if all of the following rules are true
+    //
+    //1. The x position of the plane is < the x position of the image 
+    //&& The y position of the plane is < the y position of the image
+    //
+    //2. The x position of the plane + its width is > the x position of the image
+    //&& The y position of the plane is < the y position of the image
+    //
+    //3. The x position of the plane is < the x position of the image
+    //&& the y position of the plane + its height is > the y position of the image
+    //
+    //4. The x position of the plane + its width is > the x position of the image
+    //&& The y position of the plane + its height is > the y position of the image 
+    //
+    //if Xp and Yp = Plane coordinates and Xo and Yo = Image or object coordinates
+    //and if w= width and h = height, the the general long formula is:
+    //
+    //1. Xp < Xo && Yp < Yo &&
+    //2. Xp+w > Xo && Yp < Yo &&
+    //3. Xp < Xo && Yp+h > Yo &&
+    //4. Xp+w > Xo && Yp+h > Yo
+    //
+    //However, after removing all duplicated predicates, we get a shorter formula as follows:
+    // Xp < Xo && Xp+w > Xo && 
+    // Yp < Yo && Yp+h > Yo
+    var planeSize = imgMeta.current.plane.size;
+    var planeCoords = imgMeta.current.plane.imgs[0];
+    var imgData = imgMeta.current[name];
+    var imgIndex = null; //if there are no images, return false
+
+    if (imgData.imgs.length == 0) return {
       status: false,
       img: null
-    }; //The x position of the img is >=  the x position of the plane
-    //The x position of the img is <= the x position of the plane plus its width
-    //The y position of the img is >= the y position of the plane
-    //The y position of the img is <= the y position of the plane plus its height
+    }; //get all four corner coordinates of all images of this type
 
-    var imgIndex = null;
+    var imgCoords = getImageCoords(imgData); //check if any of the corners of any image collide
+
     var detected = imgCoords.some(function (img, i) {
-      if (img.x >= planeMeta.imgs[0].x && img.x <= planeMeta.imgs[0].x + planeMeta.size.width && img.y >= planeMeta.imgs[0].y && img.y <= planeMeta.imgs[0].y + planeMeta.size.height) {
-        imgIndex = i;
-        return true;
-      } else {
-        return false;
-      }
+      //if any of these four coner coords collides, the collision is detected
+      var collision = Object.keys(img).some(function (key) {
+        if (planeCoords.x < img[key].x && planeCoords.x + planeSize.width > img[key].x && planeCoords.y < img[key].y && planeCoords.y + planeSize.height > img[key].y) {
+          imgIndex = i;
+          return true;
+        } else {
+          return false;
+        }
+      });
+      return collision;
     }); //if detected, remove img that collided with plane
 
     if (detected) {
@@ -56694,6 +56726,38 @@ var Main = function Main() {
       status: detected,
       img: imgIndex
     };
+  };
+  /**
+   * Gets an image type and returns all the four corner coordinates of each image
+   * @param {Object} imgData the object containing all the image cordinates and size of the images of its type
+   * @return {Array} an object containing all the images of the provided type with all the four corner coordinates
+   * provided as a, b, c and d
+   */
+
+
+  var getImageCoords = function getImageCoords(imgData) {
+    var imgSize = imgData.size;
+    var imgsFourCornerCoords = imgData.imgs.map(function (img) {
+      return {
+        a: {
+          x: img.x,
+          y: img.y
+        },
+        b: {
+          x: img.x + imgSize.width,
+          y: img.y
+        },
+        c: {
+          x: img.x,
+          y: img.y + imgSize.height
+        },
+        d: {
+          x: img.x + imgSize.width,
+          y: img.y + imgSize.height
+        }
+      };
+    });
+    return imgsFourCornerCoords;
   };
   /**
    * Deletes a specific single image of a certain type from the animation

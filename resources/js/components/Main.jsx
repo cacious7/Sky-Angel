@@ -88,7 +88,7 @@ let Main = () => {
                     width: 30,
                     height: 30
                 },
-                gravity: 2.5    ,
+                gravity: 2.5,
                 time: {
                     monitoring: false,
                     start: null,
@@ -96,7 +96,7 @@ let Main = () => {
                     elapsed: 0,
                     visibility: 4000
                 }, //counts time in milliseconds
-                maxDrop: 8, // maximum number of images droped at a go //counts time in milliseconds
+                maxDrop: 7, // maximum number of images droped at a go //counts time in milliseconds
                 area: { //arrays that take objects of coordinates of each side of an object
                     top: [],
                     bottom: [],
@@ -323,25 +323,59 @@ let Main = () => {
      * @return {Object} indicating the status of the detection and the index of the image in the image type array
      */
     let collisionDetected = (name) => {
-        let planeMeta = imgMeta.current.plane;
-        let imgCoords = imgMeta.current[name].imgs;
-
-        if(imgCoords.length == 0) return { status: false, img: null };
-
-        //The x position of the img is >=  the x position of the plane
-        //The x position of the img is <= the x position of the plane plus its width
-        //The y position of the img is >= the y position of the plane
-        //The y position of the img is <= the y position of the plane plus its height
+        //COLLISION IS DETECTED:
+        //When any of the four corners of an image is found inside the area of the plane.
+        //Given the coordinates of one corner, x and y, there is collision if all of the following rules are true
+        //
+        //1. The x position of the plane is < the x position of the image 
+        //&& The y position of the plane is < the y position of the image
+        //
+        //2. The x position of the plane + its width is > the x position of the image
+        //&& The y position of the plane is < the y position of the image
+        //
+        //3. The x position of the plane is < the x position of the image
+        //&& the y position of the plane + its height is > the y position of the image
+        //
+        //4. The x position of the plane + its width is > the x position of the image
+        //&& The y position of the plane + its height is > the y position of the image 
+        //
+        //if Xp and Yp = Plane coordinates and Xo and Yo = Image or object coordinates
+        //and if w= width and h = height, the the general long formula is:
+        //
+        //1. Xp < Xo && Yp < Yo &&
+        //2. Xp+w > Xo && Yp < Yo &&
+        //3. Xp < Xo && Yp+h > Yo &&
+        //4. Xp+w > Xo && Yp+h > Yo
+        //
+        //However, after removing all duplicated predicates, we get a shorter formula as follows:
+        // Xp < Xo && Xp+w > Xo && 
+        // Yp < Yo && Yp+h > Yo
+        
+        let planeSize = imgMeta.current.plane.size;
+        let planeCoords = imgMeta.current.plane.imgs[0];
+        let imgData = imgMeta.current[name];
         let imgIndex = null;
+
+        //if there are no images, return false
+        if(imgData.imgs.length == 0) return { status: false, img: null };
+
+        //get all four corner coordinates of all images of this type
+        let imgCoords = getImageCoords(imgData);
+
+        //check if any of the corners of any image collide
         let detected = imgCoords.some( (img, i) => {
-            if( (img.x >= planeMeta.imgs[0].x && ( img.x <= planeMeta.imgs[0].x + planeMeta.size.width ))
-            && (img.y >= planeMeta.imgs[0].y && ( img.y <= planeMeta.imgs[0].y + planeMeta.size.height))){
-                imgIndex = i;
-                return true;
-            }else{
-                return false;
-            }
-        });
+            //if any of these four coner coords collides, the collision is detected
+            let collision = Object.keys(img).some( key => {
+                if(planeCoords.x < img[key].x && planeCoords.x + planeSize.width > img[key].x && 
+                    planeCoords.y < img[key].y && planeCoords.y + planeSize.height > img[key].y ){
+                        imgIndex = i;
+                        return true;
+                    }else{
+                        return false;
+                    }
+            });
+            return collision;
+        } );
 
         //if detected, remove img that collided with plane
         if(detected){
@@ -349,6 +383,38 @@ let Main = () => {
         }   
 
         return { status: detected, img: imgIndex };
+    }
+
+    /**
+     * Gets an image type and returns all the four corner coordinates of each image
+     * @param {Object} imgData the object containing all the image cordinates and size of the images of its type
+     * @return {Array} an object containing all the images of the provided type with all the four corner coordinates
+     * provided as a, b, c and d
+     */
+    let getImageCoords = (imgData) => {
+        let imgSize = imgData.size;
+        let imgsFourCornerCoords = imgData.imgs.map( (img) => {
+            return {
+                a: {
+                    x: img.x,
+                    y: img.y
+                },
+                b: {
+                    x: img.x + imgSize.width,
+                    y: img.y
+                },
+                c: {
+                    x: img.x,
+                    y: img.y + imgSize.height
+                },
+                d: {
+                    x: img.x + imgSize.width,
+                    y: img.y + imgSize.height
+                }
+            };
+        } );
+
+        return imgsFourCornerCoords;
     }
 
     /**
