@@ -674,7 +674,7 @@ let Main = () => {
      * @return {void}
      */
     let getPlayers = () => {
-        url = toHttps(getPlayersUrl, true);
+        const url = toHttps(getPlayersUrl, true);
         console.log('protocol', location.protocol, 'url', url);
         $.ajax({
             url,

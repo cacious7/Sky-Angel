@@ -57112,7 +57112,7 @@ var Main = function Main() {
 
 
   var getPlayers = function getPlayers() {
-    url = Object(_helpers_toHttps__WEBPACK_IMPORTED_MODULE_5__["default"])(getPlayersUrl, true);
+    var url = Object(_helpers_toHttps__WEBPACK_IMPORTED_MODULE_5__["default"])(getPlayersUrl, true);
     console.log('protocol', location.protocol, 'url', url);
     jquery__WEBPACK_IMPORTED_MODULE_4___default.a.ajax({
       url: url,
