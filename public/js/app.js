@@ -56258,6 +56258,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _StartGame__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./StartGame */ "./resources/js/components/StartGame.jsx");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_4__);
+!(function webpackMissingModule() { var e = new Error("Cannot find module 'toHttps'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
@@ -56271,6 +56272,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 
 
 
@@ -56310,7 +56312,7 @@ var Main = function Main() {
       cloud = _useState10[0],
       setCloud = _useState10[1];
 
-  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(50),
+  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(10),
       _useState12 = _slicedToArray(_useState11, 2),
       fuel = _useState12[0],
       setFuel = _useState12[1];
@@ -56638,7 +56640,7 @@ var Main = function Main() {
 
     if (detected.status) {
       setFuel(function (prevState) {
-        return prevState += 2;
+        return prevState += 1;
       });
     }
   };
@@ -57024,7 +57026,7 @@ var Main = function Main() {
 
 
   var resetGameData = function resetGameData() {
-    setFuel(50);
+    setFuel(10);
     setStars(0);
     setFlyTime(0);
     setPauseText('pause');
@@ -57099,7 +57101,6 @@ var Main = function Main() {
         infoText.innerText = res.message;
       },
       error: function error(err) {
-        console.log(err);
         infoText.innerText = err.responseJSON.message;
       }
     });
@@ -57111,8 +57112,10 @@ var Main = function Main() {
 
 
   var getPlayers = function getPlayers() {
+    url = !(function webpackMissingModule() { var e = new Error("Cannot find module 'toHttps'"); e.code = 'MODULE_NOT_FOUND'; throw e; }())(getPlayersUrl, true);
+    console.log('protocol', location.protocol, 'url', url);
     jquery__WEBPACK_IMPORTED_MODULE_4___default.a.ajax({
-      url: getPlayersUrl,
+      url: url,
       method: 'get',
       success: function success(res) {
         res.success.forEach(function (player) {
@@ -57121,6 +57124,7 @@ var Main = function Main() {
         setPlayers(res.success);
       },
       error: function error(err) {
+        console.log('protocol', location.protocol);
         var databaseDisconnected = /SQLSTATE\[HY000\] \[2002\] no connection/i.test(err.responseJSON.message);
         databaseDisconnected ? alert('ALERT: There is no connection to the database, please contact the admin.') : console.log('error', err);
       }
@@ -57237,8 +57241,8 @@ var StartGame = function StartGame(props) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! F:\xampp\htdocs\Sky-Angel\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! F:\xampp\htdocs\Sky-Angel\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! E:\Sky-Angel\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! E:\Sky-Angel\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

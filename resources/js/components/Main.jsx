@@ -4,7 +4,7 @@ import Game from './Game';
 import GameOver from './GameOver';
 import StartGame from './StartGame';
 import $ from 'jquery';
-import toHttps from 'toHttps';
+import toHttps from '../helpers/toHttps';
 
 /**
  * Handles the game's main logic and controls its flow
