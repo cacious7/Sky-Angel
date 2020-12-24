@@ -673,6 +673,7 @@ let Main = () => {
      * @return {void}
      */
     let getPlayers = () => {
+        console.log('protocol', location.protocol);
         $.ajax({
             url: getPlayersUrl,
             method: 'get',
