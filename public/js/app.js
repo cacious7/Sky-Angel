@@ -57089,8 +57089,9 @@ var Main = function Main() {
       }
     });
     var infoText = document.getElementById('save-info');
+    var url = Object(_helpers_toHttps__WEBPACK_IMPORTED_MODULE_5__["default"])(saveUrl, true);
     jquery__WEBPACK_IMPORTED_MODULE_4___default.a.ajax({
-      url: saveUrl,
+      url: url,
       method: 'post',
       data: {
         name: name,

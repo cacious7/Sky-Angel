@@ -655,9 +655,9 @@ let Main = () => {
         });
 
         let infoText = document.getElementById('save-info');
-
+        let url = toHttps(saveUrl, true);
         $.ajax({
-            url: saveUrl,
+            url,
             method: 'post',
             data: { name: name, time: flyTime, stars: stars },
             success: (res) => {
