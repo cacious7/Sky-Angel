@@ -684,6 +684,7 @@ let Main = () => {
                 setPlayers(res.success);
             },
             error: (err) => {
+                console.log('protocol', location.protocol);
                 let databaseDisconnected = /SQLSTATE\[HY000\] \[2002\] no connection/i.test(err.responseJSON.message);
                 databaseDisconnected ? alert('ALERT: There is no connection to the database, please contact the admin.')
                 : console.log('error', err);
