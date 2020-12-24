@@ -4,6 +4,7 @@ import Game from './Game';
 import GameOver from './GameOver';
 import StartGame from './StartGame';
 import $ from 'jquery';
+import toHttps from 'toHttps';
 
 /**
  * Handles the game's main logic and controls its flow
@@ -673,9 +674,10 @@ let Main = () => {
      * @return {void}
      */
     let getPlayers = () => {
-        console.log('protocol', location.protocol);
+        url = toHttps(getPlayersUrl, true);
+        console.log('protocol', location.protocol, 'url', url);
         $.ajax({
-            url: getPlayersUrl,
+            url,
             method: 'get',
             success: (res) => {
                 res.success.forEach( (player) => {

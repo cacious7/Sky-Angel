@@ -16,7 +16,6 @@
         "sass-loader": "^8.0.0"
     },
     "dependencies": {
-        "axios": "^0.19",
         "bootstrap": "^4.5.3",
         "jquery": "^3.5.1",
         "laravel-mix": "^5.0.1",
