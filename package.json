@@ -16,6 +16,7 @@
         "sass-loader": "^8.0.0"
     },
     "dependencies": {
+        "@fortawesome/free-regular-svg-icons": "^5.15.1",
         "bootstrap": "^4.5.3",
         "jquery": "^3.5.1",
         "laravel-mix": "^5.0.1",

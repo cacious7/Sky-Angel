@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
 import { Container, Button, Card } from 'react-bootstrap';
+import Controls from './Controls';
 
 /**
  * Provides canvas for drawing the game
@@ -17,7 +18,8 @@ let Game = (props) => {
             </Card>
             <canvas width='400px' height='400px' id='canvas' >
                 Your browser does not support Canvas, please use a more recent browser such as google chrome!
-            </canvas>   
+            </canvas>
+            <Controls/>
         </Container>
     );
 }
