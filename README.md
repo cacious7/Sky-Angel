@@ -3,5 +3,5 @@
 <br>
 <ul>
  <li>The game is designed to use keyboard arrow keys. Avoid using a mobile phone.</li>
- <li>follow <a alt="Link to game" href="https://sky-angel.herokuapp.com/" target="_blank"><u><strong>this</strong></u></a> link to preview the game. </li>
+ <li>follow <a alt="Link to game" href="https://sky-angel.herokuapp.com/" target="_blank"><u><strong>this link</strong></u></a> to preview the game. </li>
 </ul>
