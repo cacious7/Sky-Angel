@@ -7,7 +7,7 @@ import { Button } from 'react-bootstrap';
  */
 let Controls = (props) => {
     return (
-        <Section>
+        <section>
             <div>
                 <Button>left</Button>
                 <div>
@@ -16,7 +16,7 @@ let Controls = (props) => {
                 </div>
                 <Button>right</Button>
             </div>
-        </Section>
+        </section>
     );
 }
 
