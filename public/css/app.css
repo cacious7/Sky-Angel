@@ -11026,3 +11026,33 @@ button:hover {
   margin-bottom: 1px;
 }
 
+@media (min-width: 200px) {
+  .start-game .rank-container {
+    width: 90%;
+  }
+}
+
+@media (min-width: 576px) {
+  .start-game .rank-container {
+    width: 60%;
+  }
+}
+
+@media (min-width: 768px) {
+  .start-game .rank-container {
+    width: 60%;
+  }
+}
+
+@media (min-width: 992px) {
+  .start-game .rank-container {
+    width: 40%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .start-game .rank-container {
+    width: 35%;
+  }
+}
+

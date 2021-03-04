@@ -131,3 +131,48 @@ button{
     }
 }
 
+// Small devices (landscape phones, 576px and up)
+@media (min-width: 200px) { 
+    .start-game{
+        .rank-container{
+            width: 90%;
+        }
+    }
+ }
+
+// Small devices (landscape phones, 576px and up)
+@media (min-width: 576px) { 
+    .start-game{
+        .rank-container{
+            width: 60%;
+        }
+    }
+ }
+
+// Medium devices (tablets, 768px and up)
+@media (min-width: 768px) { 
+    .start-game{
+        .rank-container{
+            width: 60%;
+        }
+    }
+}
+
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) {
+    .start-game{
+        .rank-container{
+            width: 40%;
+        }
+    }
+}
+
+// Extra large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) {
+    .start-game{
+        .rank-container{
+            width: 35%;
+        }
+    }
+}
+
