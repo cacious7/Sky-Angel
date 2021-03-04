@@ -10983,8 +10983,8 @@ button {
 }
 
 button:hover {
-  background: #168aff;
-  color: #c8e3fe;
+  background: #168aff !important;
+  color: #c8e3fe !important;
 }
 
 .btn-success {
@@ -10994,8 +10994,8 @@ button:hover {
 }
 
 .btn-success:hover {
-  color: #38c172;
-  background-color: #fff;
+  color: #38c172 !important;
+  background-color: #fff !important;
 }
 
 .controls {
