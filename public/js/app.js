@@ -56395,7 +56395,12 @@ var Main = function Main() {
   var _useState21 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])([]),
       _useState22 = _slicedToArray(_useState21, 2),
       players = _useState22[0],
-      setPlayers = _useState22[1]; //these variables' current values are well accessible 
+      setPlayers = _useState22[1];
+
+  var _useState23 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(30),
+      _useState24 = _slicedToArray(_useState23, 2),
+      speed = _useState24[0],
+      setSpeed = _useState24[1]; //these variables' current values are well accessible 
   //even if the draw function is called by a useEffect function
   //making it a little easier to manage the state of the game
 
@@ -56630,7 +56635,6 @@ var Main = function Main() {
     var upArrow = 38;
     var rightArrow = 39;
     var downArrow = 40;
-    var speed = 30;
     var spacebar = 32;
 
     switch (e.keyCode) {

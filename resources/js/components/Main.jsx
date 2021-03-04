@@ -23,6 +23,7 @@ let Main = () => {
     const [ pauseText, setPauseText ] = useState('Pause');
     const [ gameStarted, setGameStarted ] = useState(false);
     const [ players, setPlayers ] = useState([]);
+    const [ speed, setSpeed ] = useState(30);
 
     //these variables' current values are well accessible 
     //even if the draw function is called by a useEffect function
@@ -248,7 +249,6 @@ let Main = () => {
         const upArrow = 38;
         const rightArrow = 39;
         const downArrow = 40;
-        const speed = 30;
         const spacebar = 32;
 
         switch(e.keyCode){
