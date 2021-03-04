@@ -17,6 +17,7 @@ body{
 .game.container{
     margin: auto;
     width: $canvas-width;
+    min-width: fit-content !important;
     p{
         margin: auto 0 !important;
     }
@@ -83,19 +84,29 @@ h2{
 
 .controls{
     display: flex;
-    max-height: fit-content;
     align-items: center;
     max-width: fit-content;
+    margin-top: 1em !important;
     margin: auto;
 
     button{
         width: 5em;
         height: 3em;
+        border-radius: 0 !important;
+        background: #e9f4ff;
+        color: #168aff;
+        border: .2em solid #74b9ff;
     }
 
     .middle-controls{
         width: 5em;
-        height: 3em;
+        height: fit-content;
+        margin-left: 1px;
+        margin-right: 1px;
+
+        .up{
+            margin-bottom: 1px;
+        }
     }
 }
 
