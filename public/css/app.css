@@ -10973,10 +10973,12 @@ h2 {
 }
 
 button {
-  width: 5em;
+  max-width: -webkit-fit-content;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
   height: 3em;
   border-radius: 0 !important;
-  background: #9fa1a3 !important;
+  background: #c8e3fe !important;
   color: #168aff !important;
   border: 0.2em solid #74b9ff !important;
 }
@@ -10989,6 +10991,10 @@ button {
   max-width: fit-content;
   margin-top: 1em !important;
   margin: auto;
+}
+
+.controls button {
+  width: 5em !important;
 }
 
 .controls .middle-controls {
