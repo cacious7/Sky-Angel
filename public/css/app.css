@@ -10985,6 +10985,22 @@ button {
   border: 0.2em solid #74b9ff !important;
 }
 
+button:hover {
+  background: #168aff;
+  color: #c8e3fe;
+}
+
+.btn-success {
+  color: #fff !important;
+  background-color: #38c172 !important;
+  border-color: #38c172 !important;
+}
+
+.btn-success:hover {
+  color: #38c172;
+  background-color: #fff;
+}
+
 .controls {
   display: flex;
   align-items: center;

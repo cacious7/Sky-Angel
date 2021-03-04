@@ -89,6 +89,22 @@ button{
     background: #c8e3fe !important;
     color: #168aff !important;
     border: .2em solid #74b9ff !important;
+
+    &:hover{
+        background: #168aff;
+        color: #c8e3fe;
+    }
+}
+
+.btn-success {
+    color: #fff !important;
+    background-color: #38c172 !important;
+    border-color: #38c172 !important;
+
+    &:hover {
+        color: #38c172;
+        background-color:#fff;
+    }
 }
 
 .controls{
