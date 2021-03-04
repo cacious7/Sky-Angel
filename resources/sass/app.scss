@@ -80,7 +80,15 @@ h2{
     }
 }
 
-//controls
+//controls and buttons
+button{
+    width: 5em;
+    height: 3em;
+    border-radius: 0 !important;
+    background: #9fa1a3 !important;
+    color: #168aff !important;
+    border: .2em solid #74b9ff !important;
+}
 
 .controls{
     display: flex;
@@ -88,15 +96,6 @@ h2{
     max-width: fit-content;
     margin-top: 1em !important;
     margin: auto;
-
-    button{
-        width: 5em;
-        height: 3em;
-        border-radius: 0 !important;
-        background: #e9f4ff;
-        color: #168aff;
-        border: .2em solid #74b9ff;
-    }
 
     .middle-controls{
         width: 5em;

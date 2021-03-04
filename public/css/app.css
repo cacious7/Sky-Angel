@@ -10972,6 +10972,15 @@ h2 {
   margin: auto;
 }
 
+button {
+  width: 5em;
+  height: 3em;
+  border-radius: 0 !important;
+  background: #9fa1a3 !important;
+  color: #168aff !important;
+  border: 0.2em solid #74b9ff !important;
+}
+
 .controls {
   display: flex;
   align-items: center;
@@ -10980,15 +10989,6 @@ h2 {
   max-width: fit-content;
   margin-top: 1em !important;
   margin: auto;
-}
-
-.controls button {
-  width: 5em;
-  height: 3em;
-  border-radius: 0 !important;
-  background: #e9f4ff;
-  color: #168aff;
-  border: 0.2em solid #74b9ff;
 }
 
 .controls .middle-controls {
