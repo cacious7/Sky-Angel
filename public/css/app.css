@@ -10969,3 +10969,25 @@ h2 {
   margin: auto;
 }
 
+.controls {
+  display: flex;
+  max-height: -webkit-fit-content;
+  max-height: -moz-fit-content;
+  max-height: fit-content;
+  align-items: center;
+  max-width: -webkit-fit-content;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+  margin: auto;
+}
+
+.controls button {
+  width: 5em;
+  height: 3em;
+}
+
+.controls .middle-controls {
+  width: 5em;
+  height: 3em;
+}
+

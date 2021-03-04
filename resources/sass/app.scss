@@ -78,3 +78,24 @@ h2{
         margin: auto;
     }
 }
+
+//controls
+
+.controls{
+    display: flex;
+    max-height: fit-content;
+    align-items: center;
+    max-width: fit-content;
+    margin: auto;
+
+    button{
+        width: 5em;
+        height: 3em;
+    }
+
+    .middle-controls{
+        width: 5em;
+        height: 3em;
+    }
+}
+

@@ -8,13 +8,13 @@ import { Button } from 'react-bootstrap';
 let Controls = (props) => {
     return (
         //<section>
-            <div>
-                <Button>left</Button>
-                <div>
-                    <Button>up</Button>
-                    <Button>down</Button>
+            <div className="controls">
+                <Button className="left">left</Button>
+                <div className="middle-controls">
+                    <Button className="up">up</Button>
+                    <Button className="down">down</Button>
                 </div>
-                <Button>right</Button>
+                <Button className="right">right</Button>
             </div>
         //</section>
     );
