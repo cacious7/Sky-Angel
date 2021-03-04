@@ -10976,7 +10976,9 @@ button {
   max-width: -webkit-fit-content;
   max-width: -moz-fit-content;
   max-width: fit-content;
-  height: 3em;
+  max-height: -webkit-fit-content;
+  max-height: -moz-fit-content;
+  max-height: fit-content;
   border-radius: 0 !important;
   background: #c8e3fe !important;
   color: #168aff !important;
@@ -10995,6 +10997,7 @@ button {
 
 .controls button {
   width: 5em !important;
+  height: 3em !important;
 }
 
 .controls .middle-controls {

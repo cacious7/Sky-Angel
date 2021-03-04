@@ -84,7 +84,7 @@ h2{
 
 button{
     max-width: fit-content;
-    height: 3em;
+    max-height: fit-content;
     border-radius: 0 !important;
     background: #c8e3fe !important;
     color: #168aff !important;
@@ -100,6 +100,7 @@ button{
 
     button{
         width: 5em !important;
+        height: 3em !important;
     }
 
     .middle-controls{
