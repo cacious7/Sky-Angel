@@ -253,28 +253,56 @@ let Main = () => {
 
         switch(e.keyCode){
             case leftArrow:
-                if(imgMeta.current.plane.imgs[0].x > 15){
-                    imgMeta.current.plane.imgs[0].x -= speed;
-                }
+                handleLeft();
             break;
             case upArrow:
-                if(imgMeta.current.plane.imgs[0].y > 20){
-                    imgMeta.current.plane.imgs[0].y -= speed;
-                }
+                handleUp();
             break;
             case rightArrow:
-                if(canvas.current.width - imgMeta.current.plane.imgs[0].x > 80){
-                    imgMeta.current.plane.imgs[0].x += speed;
-                }
+                handleRight();
             break;
             case downArrow:
-                if(canvas.current.height - imgMeta.current.plane.imgs[0].y > 50){
-                    imgMeta.current.plane.imgs[0].y += speed;
-                }   
+                handleDown(); 
             break;
             case spacebar:
                 handlePause(e);
             break;
+        }
+    }
+
+    /**
+     * handles what happens if the up key is pressed 
+     */
+    const handleUp = () => {
+        if(imgMeta.current.plane.imgs[0].y > 20){
+            imgMeta.current.plane.imgs[0].y -= speed;
+        }
+    }
+
+    /**
+     * handles what happens if the up key is pressed 
+     */
+    const handleRight = () => {
+        if(canvas.current.width - imgMeta.current.plane.imgs[0].x > 80){
+            imgMeta.current.plane.imgs[0].x += speed;
+        }
+    }
+
+    /**
+     * handles what happens if the up key is pressed 
+     */
+    const handleDown = () => {
+        if(canvas.current.height - imgMeta.current.plane.imgs[0].y > 50){
+            imgMeta.current.plane.imgs[0].y += speed;
+        } 
+    }
+
+    /**
+     * handles what happens if the up key is pressed 
+     */
+    const handleLeft = () => {
+        if(imgMeta.current.plane.imgs[0].x > 15){
+            imgMeta.current.plane.imgs[0].x -= speed;
         }
     }
 
@@ -628,7 +656,18 @@ let Main = () => {
             );
         }else if(!gameOver.current && gameStarted){
             return(
-                <Game init={init} fuel={fuel} stars={stars} flyTime={flyTime} handlePause={handlePause} pauseText={pauseText}/>
+                <Game 
+                    init={init} 
+                    handleUp={handleUp}
+                    handleRight={handleRight}
+                    handleDown={handleDown}
+                    handleLeft={handleLeft}
+                    fuel={fuel} 
+                    stars={stars}
+                    flyTime={flyTime}
+                    handlePause={handlePause}
+                    pauseText={pauseText}
+                />
             );
         }else if(gameOver.current){
             return(

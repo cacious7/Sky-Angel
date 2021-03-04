@@ -10996,8 +10996,8 @@ button {
 }
 
 .controls button {
-  width: 5em !important;
-  height: 3em !important;
+  min-width: 5em !important;
+  min-height: 3em !important;
 }
 
 .controls .middle-controls {

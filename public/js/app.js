@@ -56168,15 +56168,19 @@ var Controls = function Controls(props) {
     react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "controls"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
-      className: "left"
+      className: "left",
+      onClick: props.handleLeft
     }, "left"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "middle-controls"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
-      className: "up"
+      className: "up",
+      onClick: props.handleUp
     }, "up"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
-      className: "down"
+      className: "down",
+      onClick: props.handleDown
     }, "down")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
-      className: "right"
+      className: "right",
+      onClick: props.handleRight
     }, "right")) //</section>
 
   );
@@ -56229,7 +56233,12 @@ var Game = function Game(props) {
     width: "400px",
     height: "400px",
     id: "canvas"
-  }, "Your browser does not support Canvas, please use a more recent browser such as google chrome!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Controls__WEBPACK_IMPORTED_MODULE_2__["default"], null));
+  }, "Your browser does not support Canvas, please use a more recent browser such as google chrome!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Controls__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    handleUp: props.handleUp,
+    handleRight: props.handleRight,
+    handleDown: props.handleDown,
+    handleLeft: props.handleLeft
+  }));
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (Game);
@@ -56626,36 +56635,64 @@ var Main = function Main() {
 
     switch (e.keyCode) {
       case leftArrow:
-        if (imgMeta.current.plane.imgs[0].x > 15) {
-          imgMeta.current.plane.imgs[0].x -= speed;
-        }
-
+        handleLeft();
         break;
 
       case upArrow:
-        if (imgMeta.current.plane.imgs[0].y > 20) {
-          imgMeta.current.plane.imgs[0].y -= speed;
-        }
-
+        handleUp();
         break;
 
       case rightArrow:
-        if (canvas.current.width - imgMeta.current.plane.imgs[0].x > 80) {
-          imgMeta.current.plane.imgs[0].x += speed;
-        }
-
+        handleRight();
         break;
 
       case downArrow:
-        if (canvas.current.height - imgMeta.current.plane.imgs[0].y > 50) {
-          imgMeta.current.plane.imgs[0].y += speed;
-        }
-
+        handleDown();
         break;
 
       case spacebar:
         handlePause(e);
         break;
+    }
+  };
+  /**
+   * handles what happens if the up key is pressed 
+   */
+
+
+  var handleUp = function handleUp() {
+    if (imgMeta.current.plane.imgs[0].y > 20) {
+      imgMeta.current.plane.imgs[0].y -= speed;
+    }
+  };
+  /**
+   * handles what happens if the up key is pressed 
+   */
+
+
+  var handleRight = function handleRight() {
+    if (canvas.current.width - imgMeta.current.plane.imgs[0].x > 80) {
+      imgMeta.current.plane.imgs[0].x += speed;
+    }
+  };
+  /**
+   * handles what happens if the up key is pressed 
+   */
+
+
+  var handleDown = function handleDown() {
+    if (canvas.current.height - imgMeta.current.plane.imgs[0].y > 50) {
+      imgMeta.current.plane.imgs[0].y += speed;
+    }
+  };
+  /**
+   * handles what happens if the up key is pressed 
+   */
+
+
+  var handleLeft = function handleLeft() {
+    if (imgMeta.current.plane.imgs[0].x > 15) {
+      imgMeta.current.plane.imgs[0].x -= speed;
     }
   };
   /**
@@ -57104,6 +57141,10 @@ var Main = function Main() {
     } else if (!gameOver.current && gameStarted) {
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Game__WEBPACK_IMPORTED_MODULE_1__["default"], {
         init: init,
+        handleUp: handleUp,
+        handleRight: handleRight,
+        handleDown: handleDown,
+        handleLeft: handleLeft,
         fuel: fuel,
         stars: stars,
         flyTime: flyTime,
