@@ -10907,6 +10907,11 @@ body {
   padding-top: 4rem;
 }
 
+.start-game.container,
+.game-over.container {
+  max-width: 50em;
+}
+
 .game.container {
   width: -webkit-fit-content;
   width: -moz-fit-content;
@@ -11058,7 +11063,7 @@ button:hover {
 
 @media (min-width: 1200px) {
   .start-game .rank-container {
-    width: 35%;
+    width: 60%;
   }
 }
 
