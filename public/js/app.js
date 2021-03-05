@@ -56168,15 +56168,19 @@ var Controls = function Controls(props) {
     react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "controls"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
-      className: "left"
+      className: "left",
+      onClick: props.handleLeft
     }, "left"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "middle-controls"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
-      className: "up"
+      className: "up",
+      onClick: props.handleUp
     }, "up"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
-      className: "down"
+      className: "down",
+      onClick: props.handleDown
     }, "down")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
-      className: "right"
+      className: "right",
+      onClick: props.handleRight
     }, "right")) //</section>
 
   );
