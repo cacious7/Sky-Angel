@@ -10908,8 +10908,10 @@ body {
 }
 
 .game.container {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
   margin: auto;
-  width: 400px;
   min-width: -webkit-fit-content !important;
   min-width: -moz-fit-content !important;
   min-width: fit-content !important;
@@ -10922,7 +10924,7 @@ body {
 .game.container .card {
   display: flex;
   flex-direction: row;
-  width: 400px;
+  width: 100%;
   justify-content: space-between;
   align-items: center;
   padding: 0 0.5rem;
@@ -10931,6 +10933,10 @@ body {
 
 .game.container .card button {
   margin: 0.2rem;
+}
+
+.game.container canvas#canvas {
+  width: 100%;
 }
 
 .card-header {

@@ -7,7 +7,7 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
-$canvas-width: 400px;
+$canvas-width: 100%;
 $canvas-height: 400px;
 
 body{
@@ -15,8 +15,8 @@ body{
 }
 
 .game.container{
+    width: fit-content;
     margin: auto;
-    width: $canvas-width;
     min-width: fit-content !important;
     p{
         margin: auto 0 !important;
@@ -34,6 +34,10 @@ body{
         button{
             margin: .2rem;
         }
+    }
+
+    canvas#canvas{
+        width: $canvas-width;
     }
 }
 
