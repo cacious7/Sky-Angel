@@ -10903,6 +10903,18 @@ a.text-dark:focus {
   }
 }
 
+::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+::-webkit-scrollbar-corner {
+  background: beige;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ad9564;
+}
+
 body {
   padding-top: 4rem;
 }
