@@ -19,7 +19,12 @@ let Game = (props) => {
             <canvas width='400px' height='400px' id='canvas' >
                 Your browser does not support Canvas, please use a more recent browser such as google chrome!
             </canvas>
-            <Controls/>
+            <Controls 
+                handleUp={props.handleUp} 
+                handleRight={props.handleRight} 
+                handleDown={props.handleDown} 
+                handleLeft={props.handleLeft} 
+            />
         </Container>
     );
 }

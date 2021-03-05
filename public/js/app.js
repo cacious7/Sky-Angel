@@ -56233,7 +56233,12 @@ var Game = function Game(props) {
     width: "400px",
     height: "400px",
     id: "canvas"
-  }, "Your browser does not support Canvas, please use a more recent browser such as google chrome!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Controls__WEBPACK_IMPORTED_MODULE_2__["default"], null));
+  }, "Your browser does not support Canvas, please use a more recent browser such as google chrome!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Controls__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    handleUp: props.handleUp,
+    handleRight: props.handleRight,
+    handleDown: props.handleDown,
+    handleLeft: props.handleLeft
+  }));
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (Game);
@@ -56390,7 +56395,12 @@ var Main = function Main() {
   var _useState21 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])([]),
       _useState22 = _slicedToArray(_useState21, 2),
       players = _useState22[0],
-      setPlayers = _useState22[1]; //these variables' current values are well accessible 
+      setPlayers = _useState22[1];
+
+  var _useState23 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(30),
+      _useState24 = _slicedToArray(_useState23, 2),
+      speed = _useState24[0],
+      setSpeed = _useState24[1]; //these variables' current values are well accessible 
   //even if the draw function is called by a useEffect function
   //making it a little easier to manage the state of the game
 
@@ -56625,41 +56635,68 @@ var Main = function Main() {
     var upArrow = 38;
     var rightArrow = 39;
     var downArrow = 40;
-    var speed = 30;
     var spacebar = 32;
 
     switch (e.keyCode) {
       case leftArrow:
-        if (imgMeta.current.plane.imgs[0].x > 15) {
-          imgMeta.current.plane.imgs[0].x -= speed;
-        }
-
+        handleLeft();
         break;
 
       case upArrow:
-        if (imgMeta.current.plane.imgs[0].y > 20) {
-          imgMeta.current.plane.imgs[0].y -= speed;
-        }
-
+        handleUp();
         break;
 
       case rightArrow:
-        if (canvas.current.width - imgMeta.current.plane.imgs[0].x > 80) {
-          imgMeta.current.plane.imgs[0].x += speed;
-        }
-
+        handleRight();
         break;
 
       case downArrow:
-        if (canvas.current.height - imgMeta.current.plane.imgs[0].y > 50) {
-          imgMeta.current.plane.imgs[0].y += speed;
-        }
-
+        handleDown();
         break;
 
       case spacebar:
         handlePause(e);
         break;
+    }
+  };
+  /**
+   * handles what happens if the up key is pressed 
+   */
+
+
+  var handleUp = function handleUp() {
+    if (imgMeta.current.plane.imgs[0].y > 20) {
+      imgMeta.current.plane.imgs[0].y -= speed;
+    }
+  };
+  /**
+   * handles what happens if the up key is pressed 
+   */
+
+
+  var handleRight = function handleRight() {
+    if (canvas.current.width - imgMeta.current.plane.imgs[0].x > 80) {
+      imgMeta.current.plane.imgs[0].x += speed;
+    }
+  };
+  /**
+   * handles what happens if the up key is pressed 
+   */
+
+
+  var handleDown = function handleDown() {
+    if (canvas.current.height - imgMeta.current.plane.imgs[0].y > 50) {
+      imgMeta.current.plane.imgs[0].y += speed;
+    }
+  };
+  /**
+   * handles what happens if the up key is pressed 
+   */
+
+
+  var handleLeft = function handleLeft() {
+    if (imgMeta.current.plane.imgs[0].x > 15) {
+      imgMeta.current.plane.imgs[0].x -= speed;
     }
   };
   /**
@@ -57108,6 +57145,10 @@ var Main = function Main() {
     } else if (!gameOver.current && gameStarted) {
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Game__WEBPACK_IMPORTED_MODULE_1__["default"], {
         init: init,
+        handleUp: handleUp,
+        handleRight: handleRight,
+        handleDown: handleDown,
+        handleLeft: handleLeft,
         fuel: fuel,
         stars: stars,
         flyTime: flyTime,

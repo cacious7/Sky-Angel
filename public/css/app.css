@@ -10943,10 +10943,8 @@ h2 {
 }
 
 .rank-field.card {
-  width: -webkit-fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
   margin: auto;
+  max-width: 93%;
   display: flex;
   flex-direction: row;
   background-color: floralwhite;
@@ -10960,7 +10958,6 @@ h2 {
 
 .start-game .rank-container {
   overflow: scroll;
-  width: 23rem;
   background: beige;
   max-height: 12rem;
   padding-top: 0.5rem;
@@ -10970,6 +10967,35 @@ h2 {
 .start-game button {
   display: flex;
   margin: auto;
+}
+
+button {
+  max-width: -webkit-fit-content;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+  max-height: -webkit-fit-content;
+  max-height: -moz-fit-content;
+  max-height: fit-content;
+  border-radius: 0 !important;
+  background: #c8e3fe !important;
+  color: #168aff !important;
+  border: 0.2em solid #74b9ff !important;
+}
+
+button:hover {
+  background: #168aff !important;
+  color: #c8e3fe !important;
+}
+
+.btn-success {
+  color: #fff !important;
+  background-color: #38c172 !important;
+  border-color: #38c172 !important;
+}
+
+.btn-success:hover {
+  color: #38c172 !important;
+  background-color: #fff !important;
 }
 
 .controls {
@@ -10983,12 +11009,8 @@ h2 {
 }
 
 .controls button {
-  width: 5em;
-  height: 3em;
-  border-radius: 0 !important;
-  background: #e9f4ff;
-  color: #168aff;
-  border: 0.2em solid #74b9ff;
+  min-width: 5em !important;
+  min-height: 3em !important;
 }
 
 .controls .middle-controls {
@@ -11002,5 +11024,35 @@ h2 {
 
 .controls .middle-controls .up {
   margin-bottom: 1px;
+}
+
+@media (min-width: 200px) {
+  .start-game .rank-container {
+    width: 90%;
+  }
+}
+
+@media (min-width: 576px) {
+  .start-game .rank-container {
+    width: 60%;
+  }
+}
+
+@media (min-width: 768px) {
+  .start-game .rank-container {
+    width: 60%;
+  }
+}
+
+@media (min-width: 992px) {
+  .start-game .rank-container {
+    width: 40%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .start-game .rank-container {
+    width: 35%;
+  }
 }
 

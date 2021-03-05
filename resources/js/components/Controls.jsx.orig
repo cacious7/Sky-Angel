@@ -9,12 +9,21 @@ let Controls = (props) => {
     return (
         //<section>
             <div className="controls">
+<<<<<<< HEAD
+                <Button className="left" onClick={ props.handleLeft }>left</Button>
+                <div className="middle-controls">
+                    <Button className="up" onClick={ props.handleUp }>up</Button>
+                    <Button className="down" onClick={ props.handleDown }>down</Button>
+                </div>
+                <Button className="right" onClick={ props.handleRight }>right</Button>
+=======
                 <Button className="left" onClick={props.handleLeft}>left</Button>
                 <div className="middle-controls">
                     <Button className="up" onClick={props.handleUp}>up</Button>
                     <Button className="down" onClick={props.handleDown}>down</Button>
                 </div>
                 <Button className="right" onClick={props.handleRight}>right</Button>
+>>>>>>> 4b81300f85f9be3240d3de77386169dedeb86118
             </div>
         //</section>
     );
